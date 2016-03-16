@@ -20,9 +20,11 @@ package org.apache.ace.client.xworkspace.impl;
 
 import static org.apache.ace.client.xworkspace.Workspace.*;
 
+import java.io.BufferedWriter;
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -34,6 +36,7 @@ import java.util.Map;
 import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
+import java.util.jar.JarOutputStream;
 
 import org.apache.ace.client.repository.object.Artifact2FeatureAssociation;
 import org.apache.ace.client.repository.object.ArtifactObject;
@@ -320,4 +323,57 @@ class DPHelper {
 
         return tempFile;
     }
+    
+    public File downloadArtifactContents(boolean isJar, String directory, String filename, String fileUrl) throws IOException {     
+        File file = new File(directory, filename);
+        FileOutputStream fos = null;
+        //JarOutputStream jos = null;
+        InputStream is = null;
+
+        try {
+        	is = new URL(fileUrl).openStream();
+            fos = new FileOutputStream(file);
+            //	jos = new JarOutputStream(fos);
+
+            byte[] buffer = new byte[4096];
+            int len;
+            while ((len = is.read(buffer)) > 0) {
+            	//if (jos != null)
+            	//	jos.write(buffer, 0, len);
+            	//else
+            	fos.write(buffer, 0, len);
+            }
+        }
+        finally {
+        	//closeSilently(jos);
+            closeSilently(fos);
+            closeSilently(is);
+        }
+
+        return file;
+    }    
+    
+    public void writeTextContents(String directory, String filename, String contents) throws IOException {
+    	BufferedWriter writer = null;
+    	try
+    	{
+    	    writer = new BufferedWriter( new FileWriter(directory+File.separator+filename));
+    	    writer.write( contents);
+
+    	}
+    	catch ( IOException e)
+    	{
+    	}
+    	finally
+    	{
+    	    try
+    	    {
+    	        if ( writer != null)
+    	        writer.close( );
+    	    }
+    	    catch ( IOException e)
+    	    {
+    	    }
+    	}
+    }      
 }

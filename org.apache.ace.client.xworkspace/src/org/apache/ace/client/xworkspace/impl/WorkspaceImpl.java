@@ -807,11 +807,12 @@ public class WorkspaceImpl implements Workspace {
     
     
     @Override
-    public String expw(String fileName) throws Exception {
+    public String expw(String id, String directoryPath) throws Exception {
+    	DPHelper dhelper = new DPHelper(this, m_log);
     	Map<String,String> fmap = new HashMap<String,String>();
     	
     	StringBuilder sb = new StringBuilder();
-    	sb.append("<repository id=\""+fileName+"\">");
+    	sb.append("<repository id=\""+id+"\">");
     	sb.append("<distributions>");
     	List<DistributionObject> dists = ld();
         for (DistributionObject dobj : dists) {
@@ -824,7 +825,7 @@ public class WorkspaceImpl implements Workspace {
         		Enumeration<String> keys = f2d.getAttributeKeys();
         		String fName = f2d.getAttribute("leftEndpoint");
         		fName = lf(fName).get(0).getName();
-        		fmap.put(fName,downloadFeature(fName));
+        		fmap.put(fName,downloadFeature(directoryPath,fName,dhelper));
         		sb.append("<featureref refid=\""+fName+"\">");
         		sb.append("</featureref>");
         	}
@@ -844,13 +845,17 @@ public class WorkspaceImpl implements Workspace {
         sb.append(fsb.toString());
         sb.append("</repository>");
         
+        dhelper.writeTextContents(directoryPath, id+".xml", sb.toString());
+        
         return sb.toString();
     }       
 
-    private String downloadFeature(String fName) throws Exception {
+    private String downloadFeature(String directoryPath, String fName, DPHelper dhelper) throws Exception {
     	StringBuilder fsb = new StringBuilder();
     	fsb.append("<feature id=\""+fName+"\">");
     	
+    	
+    	boolean isJar = true;
     	List<Artifact2FeatureAssociation> arts = la2f("(rightEndpoint=*name="+fName+"*)");
     	for (Artifact2FeatureAssociation art : arts) {
     		String le = art.getAttribute("leftEndpoint");
@@ -860,10 +865,22 @@ public class WorkspaceImpl implements Workspace {
     		ArtifactObject a = la(le).get(0);
     		String url = a.getURL();
     		String name = a.getAttribute("Bundle-SymbolicName");
-    		if (name == null)
-    			name = a.getAttribute("filename");
-    		String ver = a.getAttribute("Bundle-Version");    		
-    		fsb.append("<artifact id=\""+name+"\" version=\""+ver+"\" url=\""+url+"\">");
+    		String ver = a.getAttribute("Bundle-Version"); 
+    		if (name == null) {
+    			isJar = false;
+    			name = a.getAttribute("filename")+".xml";
+    		}
+    		else {
+    			isJar = true;
+    			String id = name; 
+    			name += "-"+ver+".jar";
+    	   		fsb.append("<artifact id=\""+id+"\" name=\""+name+"\" version=\""+ver+"\">");
+    		}
+    		
+    		
+    		dhelper.downloadArtifactContents(isJar, directoryPath, name, url);
+    		
+   	
     		fsb.append("</artifact>");
     	}
     	

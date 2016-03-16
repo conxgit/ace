@@ -57,5 +57,5 @@ import org.osgi.service.useradmin.User;
 public interface Workspace extends org.apache.ace.client.workspace.Workspace {
     /*** export/import 
      * @throws Exception ***/
-    public String expw(String fileName) throws IOException, Exception;
+	public String expw(String id, String directoryPath) throws Exception;
 }
