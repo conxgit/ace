@@ -1,0 +1,20 @@
+# Open workspace
+workspace = (ace:cw)
+
+# Get all dists
+dists = ($workspace ld)
+
+# Get features per dist
+each $dists { 
+	echo "proc dist: $it"
+	dist_name = $it getName
+	f2d = (each $dists { $workspace lf2d "(rightEndpoint=*name=$dist_name*)" })
+	echo "dist ftrs: $f2d"
+	each $f2d {
+	  ftr_name = $it getName
+	  echo "ftr: $ftr_name"
+	}
+}
+
+# Close
+ace:rw $workspace
