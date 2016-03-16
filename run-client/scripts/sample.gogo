@@ -1,0 +1,82 @@
+dist="test"
+feature="myproject-$dist"
+
+bndWorkspace="/path/to/myproject"
+bndProject="myproject"
+bndFile=$dist".bndrun"
+
+obr=getproperty org.apache.ace.obr
+aceObr="http://$obr/obr/repository.xml"
+
+tmprepo=bnd:dist $bndWorkspace $bndProject $bndFile
+
+echo "Define repositories"
+sourceindex = (repo:index $tmprepo)
+sourcerepo = (repo:repo R5 $sourceindex)
+targetrepo = (repo:repo OBR "http://localhost:8084/obr/repository.xml")
+releaserepo = (repo:repo OBR
+"file:///path/to/myproject/cnf/releaserepo/index.xml,\
+http://repository.amdatu.org/dependencies/index.xml.gz,\
+http://repository.amdatu.org/release/index.xml.gz,\
+http://repository.amdatu.org/snapshot/index.xml.gz")
+
+echo "Deploying bundles"
+deployed = repo:cd $releaserepo $sourcerepo $targetrepo
+
+echo "Opening client workspace"
+workspace = (ace:cw)
+
+echo "Creating new artifacts"
+each $deployed {
+  identity = $it getIdentity
+  version = $it getVersion
+  name = "$identity - $version"
+  url = $it getUrl
+  mimetype = $it getMimetype
+
+  if { (coll:first ($workspace la "(artifactName=$name)")) } { } { \
+  if { $mimetype equals "application/xml:osgi-autoconf" } \
+  { $workspace ca [ artifactName="$name" url="$url" mimetype="$mimetype"
+filename="$name" processorPid="org.osgi.deployment.rp.autoconf" ] } \
+  { $workspace ca [ artifactName="$name" url="$url" mimetype="$mimetype"
+Bundle-SymbolicName="$identity" Bundle-Version="$version" ]; echo "Create
+$name" }\
+  }
+}
+
+echo "Ensuring feature exists"
+if { (coll:first ($workspace lf "(name=$feature)")) } { echo " -> exists" }
+{ $workspace cf "$feature"; echo " -> created" }
+
+echo "Ensuring distribution exists"
+if { (coll:first ($workspace ld "(name=$dist)")) } { echo " -> exists" } {
+$workspace cd "$dist"; echo " -> created" }
+
+echo "Ensuring f2d association"
+if { (coll:first ($workspace lf2d "(leftEndpoint=*name=$feature*)")) } {
+echo " -> exists" } { $workspace cf2d "(name=$feature)" "(name=$dist)" "1"
+"1"; echo " -> created" }
+
+echo "Removing a2f associations for feature: $feature"
+a2f = ($workspace la2f "(rightEndpoint=*name=$feature*)")
+each $a2f {
+$workspace da2f $it
+}
+
+echo "Ensuring a2f associations for feature: $feature"
+b = bnd:lb $aceObr $bndWorkspace $bndProject $bndFile
+each $b {
+  identity = $it getBsn
+  version = $it getVersion
+
+  leftEndpoint="(&(Bundle-SymbolicName=$identity)(Bundle-Version=$version))"
+  rightEndpoint="(name=$feature)"
+  $workspace ca2f $leftEndpoint $rightEndpoint "10000" "1"
+}
+
+echo "Committing workspace"
+$workspace commit
+
+# Let events settle
+misc:sleep 2000
+ace:rw $workspace
