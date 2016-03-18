@@ -924,7 +924,7 @@ public class WorkspaceImpl implements Workspace {
 		            //String urlJarVer = jis.getManifest().getMainAttributes().getValue("Bundle-Version");
 		            String urlJarVer = deriveVersion(df,pattern,url,jarVer,ver);
 		            jarVer = removeTS(df,urlJarVer);
-	    	   		brsb.append("\t"+id+";version=\"["+jarVer+","+jarVer+"]\""+ENDOL);
+	    	   		brsb.append("\t"+id+";version=\"["+jarVer+","+urlJarVer+"]\""+ENDOL);
 	    		}
 	    		
 	   	
