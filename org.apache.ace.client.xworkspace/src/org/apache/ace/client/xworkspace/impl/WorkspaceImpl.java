@@ -18,9 +18,13 @@
  */
 package org.apache.ace.client.xworkspace.impl;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -28,6 +32,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.jar.Attributes;
+import java.util.jar.JarInputStream;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.ace.client.repository.Association;
 import org.apache.ace.client.repository.ObjectRepository;
@@ -808,85 +816,200 @@ public class WorkspaceImpl implements Workspace {
     
     @Override
     public String expw(String id, String directoryPath) throws Exception {
-    	DPHelper dhelper = new DPHelper(this, m_log);
-    	Map<String,String> fmap = new HashMap<String,String>();
+    	String brName = id+".bndrun";
+    	StringBuilder brsb = new StringBuilder();
+    	brsb.append("-include: \\\n");
     	
-    	StringBuilder sb = new StringBuilder();
-    	sb.append("<repository id=\""+id+"\">");
-    	sb.append("<distributions>");
-    	List<DistributionObject> dists = ld();
-        for (DistributionObject dobj : dists) {
-        	String dName = dobj.getName();
-        	sb.append("<distribution id=\""+dName+"\">");
-        	
-        	sb.append("<featurerefs>");
-        	List<Feature2DistributionAssociation> f2dList = lf2d("(rightEndpoint=*name="+dName+"*)");
-        	for (Feature2DistributionAssociation f2d : f2dList) {
-        		Enumeration<String> keys = f2d.getAttributeKeys();
-        		String fName = f2d.getAttribute("leftEndpoint");
-        		fName = lf(fName).get(0).getName();
-        		fmap.put(fName,downloadFeature(directoryPath,fName,dhelper));
-        		sb.append("<featureref refid=\""+fName+"\">");
-        		sb.append("</featureref>");
-        	}
-        	sb.append("</featurerefs>");
-        	
-        	sb.append("</distribution>");
-        }
-        
-    	StringBuilder fsb = new StringBuilder();
-    	fsb.append("<features>");
-    	for (String f : fmap.keySet()) {
-    		fsb.append(fmap.get(f));
-    	}
-        fsb.append("</features>");
-        
-        sb.append("</distributions>");
-        sb.append(fsb.toString());
-        sb.append("</repository>");
-        
-        dhelper.writeTextContents(directoryPath, id+".xml", sb.toString());
-        
-        return sb.toString();
+		StringBuilder sb = new StringBuilder();
+    	try {
+			DPHelper dhelper = new DPHelper(this, m_log);
+			Map<String,String> fmap = new HashMap<String,String>();
+			
+			sb.append("<repository id=\""+id+"\">");
+			sb.append("<distributions>");
+			List<DistributionObject> dists = ld();
+			for (DistributionObject dobj : dists) {
+				String dName = dobj.getName();
+				sb.append("<distribution id=\""+dName+"\">");
+				
+				sb.append("<featurerefs>");
+				List<Feature2DistributionAssociation> f2dList = lf2d("(rightEndpoint=*name="+dName+"*)");
+				for (Feature2DistributionAssociation f2d : f2dList) {
+					Enumeration<String> keys = f2d.getAttributeKeys();
+					String fName = f2d.getAttribute("leftEndpoint");
+					List<FeatureObject> lf = lf(fName);
+					if (lf.size() > 0) {
+						fName = lf.get(0).getName();
+						fmap.put(fName,downloadFeature(directoryPath,fName,dhelper));
+						sb.append("<featureref refid=\""+fName+"\">");
+					sb.append("</featureref>");
+					}
+				}
+				sb.append("</featurerefs>");
+				
+				sb.append("</distribution>");
+			}
+			
+			StringBuilder fsb = new StringBuilder();
+			fsb.append("<features>");
+			String ENDOL = ",\\\n";
+			for (String f : fmap.keySet()) {
+				fsb.append(fmap.get(f));
+				brsb.append("\t"+f+".bndrun"+ENDOL);
+			}
+			fsb.append("</features>");
+			
+			sb.append("</distributions>");
+			sb.append(fsb.toString());
+			sb.append("</repository>");
+			
+			dhelper.writeTextContents(directoryPath, id+".xml", sb.toString());
+			dhelper.writeTextContents(directoryPath, brName, brsb.toString());
+			
+			return sb.toString();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw e;
+		}
     }       
 
     private String downloadFeature(String directoryPath, String fName, DPHelper dhelper) throws Exception {
+    	SimpleDateFormat df = new SimpleDateFormat("YYYYMMDDHHmm");//201508261740
+    	Pattern pattern = Pattern.compile("(?<![\\d.])(\\d+[.])+(\\d+)(?![\\d.])?");
+    	
+    	String featureBndrun = fName+".bndrun";
+    	StringBuilder brsb = new StringBuilder();
+    	String bndrunFirstLine = "-runbundles."+fName+": \\\n";
+		brsb.append(bndrunFirstLine);
+    	
     	StringBuilder fsb = new StringBuilder();
     	fsb.append("<feature id=\""+fName+"\">");
     	
     	
     	boolean isJar = true;
     	List<Artifact2FeatureAssociation> arts = la2f("(rightEndpoint=*name="+fName+"*)");
-    	for (Artifact2FeatureAssociation art : arts) {
+    	String ENDOL = ",\\\n";
+    	String url = null;
+		for (Artifact2FeatureAssociation art : arts) {
     		String le = art.getAttribute("leftEndpoint");
     		//Enumeration<String> keys = art.getAttributeKeys();
     		//String aName = art.getAttribute("Bundle-SymbolicName");
     		//String ver = art.getAttribute("Bundle-Version");
-    		ArtifactObject a = la(le).get(0);
-    		String url = a.getURL();
-    		String name = a.getAttribute("Bundle-SymbolicName");
-    		String ver = a.getAttribute("Bundle-Version"); 
-    		if (name == null) {
-    			isJar = false;
-    			name = a.getAttribute("filename")+".xml";
+    		List<ArtifactObject> ds = la(le);
+    		if (ds.size() > 0) {
+				ArtifactObject a = ds.get(0);
+				Enumeration<String> aks = a.getAttributeKeys();
+	    		url = a.getURL();
+	    		String name = a.getAttribute("Bundle-SymbolicName");
+	    		String ver = a.getAttribute("Bundle-Version"); 
+	    		String id = null;
+	    		if (name == null) {
+	    			isJar = false;
+	    			name = a.getAttribute("filename");
+	    	   		fsb.append("<artifact id=\""+name+"\" name=\""+name+"\">");
+	    		}
+	    		else {
+	    			isJar = true;
+	    			id = name; 
+	    			name += "-"+ver+".jar";
+	    	   		fsb.append("<artifact id=\""+id+"\" name=\""+name+"\" version=\""+ver+"\">");
+	    		}
+	    		
+	    		
+	    		File file = dhelper.downloadArtifactContents(isJar, directoryPath, name, url);
+	    		if (isJar) {
+		            JarInputStream jis = new JarInputStream(new FileInputStream(file));
+		            String jarVer = jis.getManifest().getMainAttributes().getValue("Bundle-Version");
+		            //String urlJarVer = jis.getManifest().getMainAttributes().getValue("Bundle-Version");
+		            String urlJarVer = deriveVersion(df,pattern,url,jarVer,ver);
+		            jarVer = removeTS(df,urlJarVer);
+	    	   		brsb.append("\t"+id+";version=\"["+jarVer+","+jarVer+"]\""+ENDOL);
+	    		}
+	    		
+	   	
+	    		fsb.append("</artifact>");
     		}
-    		else {
-    			isJar = true;
-    			String id = name; 
-    			name += "-"+ver+".jar";
-    	   		fsb.append("<artifact id=\""+id+"\" name=\""+name+"\" version=\""+ver+"\">");
-    		}
-    		
-    		
-    		dhelper.downloadArtifactContents(isJar, directoryPath, name, url);
-    		
-   	
-    		fsb.append("</artifact>");
     	}
     	
     	fsb.append("</feature>");
     	
+    	String bndrunContent = brsb.toString();
+    	int index = bndrunContent.lastIndexOf(ENDOL);
+    	if (index >= 0)
+    		bndrunContent = bndrunContent.substring(0,index);
+		dhelper.writeTextContents(directoryPath,featureBndrun,bndrunContent);
+    	
     	return fsb.toString();
+	}
+
+	private String deriveVersion(SimpleDateFormat df, Pattern pattern, String url, String jarVer, String ver) {
+		int jarIndex = url.lastIndexOf("/");
+		String jarName = url.substring(jarIndex+1);
+		int extIndex = jarName.lastIndexOf(".");
+		String jarNameVer = jarName.substring(0,extIndex);
+		
+		String jarFileVer = null;
+    	try {
+			Matcher matcher = pattern.matcher(jarNameVer);
+			if (matcher.find()) {
+				jarFileVer = matcher.group(0);		
+			}
+			else {
+		        if (jarFileVer == null) {
+		        	jarFileVer = null;
+		        }					
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		//int verIndex = jarNameVer.indexOf("-");
+		//String jarFileVer = jarNameVer.substring(verIndex+1);
+		
+/*		String[] tokens = jarNameVer.split("-");
+		String jarFileVer = null;
+		if (tokens.length == 2) { 
+			jarFileVer = tokens[1];
+		}
+		else if (tokens.length == 3) {
+			jarFileVer = tokens[2];
+		}
+		else {
+			jarFileVer = jarNameVer.substring(jarNameVer.lastIndexOf("-")+1);
+		}*/
+
+        
+		return jarFileVer;
+	}
+
+	private String removeTS(SimpleDateFormat df,  String jarVer) {
+		int li = jarVer.lastIndexOf('.');
+		if (li < 0)
+			return jarVer;
+		
+		String potentialTS = jarVer.substring(li+1);
+		
+		//Is TS
+		try {
+			df.parse(potentialTS);
+			jarVer = jarVer.substring(0,li);
+			return jarVer;
+		} catch (ParseException e) {
+		}
+		
+		//Is not number
+		if (!potentialTS.matches("[-+]?\\d*\\.?\\d+")) {
+			jarVer = jarVer.substring(0,li);
+			return jarVer;
+		}
+		
+		String[] tokens = jarVer.split("\\.");
+		if (tokens.length > 3)
+			jarVer = tokens[0]+"."+tokens[1]+"."+tokens[2];
+		
+		return jarVer;
 	}
 
 	@Override

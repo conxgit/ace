@@ -329,7 +329,6 @@ class DPHelper {
         FileOutputStream fos = null;
         //JarOutputStream jos = null;
         InputStream is = null;
-
         try {
         	is = new URL(fileUrl).openStream();
             fos = new FileOutputStream(file);
@@ -349,6 +348,7 @@ class DPHelper {
             closeSilently(fos);
             closeSilently(is);
         }
+        
 
         return file;
     }    
