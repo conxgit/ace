@@ -33,6 +33,7 @@ import org.apache.ace.client.repository.object.DistributionObject;
 import org.apache.ace.client.repository.object.Feature2DistributionAssociation;
 import org.apache.ace.client.repository.object.FeatureObject;
 import org.apache.ace.client.repository.stateful.StatefulTargetObject;
+import org.osgi.resource.Resource;
 import org.osgi.service.useradmin.User;
 
 /**
@@ -58,4 +59,12 @@ public interface Workspace extends org.apache.ace.client.workspace.Workspace {
     /*** export/import 
      * @throws Exception ***/
 	public String expw(String id, String directoryPath) throws Exception;
+	/***
+	 * @param directoryPath
+	 * @param exportFile
+	 * @throws Exception
+	 */
+	public void impw(String directoryPath, String exportFile)  throws Exception;
+	
+	public void cpytgs(RepositoryObject src, RepositoryObject tgt) throws Exception;
 }

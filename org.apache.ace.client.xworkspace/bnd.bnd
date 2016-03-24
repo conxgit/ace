@@ -9,7 +9,9 @@
 	org.apache.ace.client.repository.api;version=latest,\
 	org.apache.felix.gogo.runtime,\
 	org.apache.ace.authentication.api;version=latest,\
-	org.apache.ace.client.workspace;version=latest
+	org.apache.ace.client.workspace;version=latest,\
+	javax.xml;version=1.3,\
+	com.springsource.org.apache.xerces;version=2.9
 	
 Bundle-Version: 2.0.1
 Bundle-Activator: org.apache.ace.client.xworkspace.impl.Activator
