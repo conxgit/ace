@@ -19,6 +19,7 @@
 	org.amdatu.scheduling.api,\
 	org.amdatu.scheduling.quartz,\
 	com.vaadin,\
+	javax.xml,\
 	org.apache.ace.authentication.api;version=latest,\
 	org.apache.ace.authentication.impl;version=latest,\
 	org.apache.ace.authentication.processor.basicauth;version=latest,\
@@ -53,7 +54,10 @@
 	org.apache.ace.webui.vaadin;version=latest,\
 	org.apache.ace.gogo;version=latest,\
 	org.apache.ace.feedback.common;version=latest,\
-	org.apache.ace.http.context;version=latest
+	org.apache.ace.http.context;version=latest,\
+	com.springsource.org.apache.xerces;version=2.9.1,\
+	com.springsource.org.apache.xmlcommons;version=1.3.4,\
+	com.springsource.org.apache.xml.resolver;version=1.2.0
 
 -runrepos: \
 	Workspace,\

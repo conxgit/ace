@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<repository increment="1456435126000" name="Local" xmlns="http://www.osgi.org/xmlns/repository/v1.0.0">
+<repository increment="1458746091000" name="Local" xmlns="http://www.osgi.org/xmlns/repository/v1.0.0">
   <resource>
     <capability namespace="osgi.identity">
       <attribute name="osgi.identity" value="bcpkix"/>
@@ -1920,6 +1920,615 @@
     <requirement namespace="osgi.ee">
       <directive name="filter" value="(&amp;(osgi.ee=JavaSE)(version=1.5))"/>
     </requirement>
+  </resource>
+  <resource>
+    <capability namespace="osgi.identity">
+      <attribute name="osgi.identity" value="com.springsource.org.apache.xerces"/>
+      <attribute name="type" value="osgi.fragment"/>
+      <attribute name="version" type="Version" value="2.9.1"/>
+    </capability>
+    <capability namespace="osgi.content">
+      <attribute name="osgi.content" value="b9fb1b6b8ff5be817387f245498c5debc06f5ceef2720ebebd646220ad8fc417"/>
+      <attribute name="url" value="com.springsource.org.apache.xerces/com.springsource.org.apache.xerces-2.9.1.jar"/>
+      <attribute name="size" type="Long" value="1244694"/>
+      <attribute name="mime" value="application/vnd.osgi.bundle"/>
+    </capability>
+    <capability namespace="osgi.wiring.package">
+      <attribute name="osgi.wiring.package" value="org.apache.html.dom"/>
+      <attribute name="version" type="Version" value="2.9.1"/>
+      <attribute name="bundle-symbolic-name" value="com.springsource.org.apache.xerces"/>
+      <attribute name="bundle-version" type="Version" value="2.9.1"/>
+      <directive name="uses" value="org.apache.xerces.dom,org.w3c.dom,org.w3c.dom.html,org.xml.sax"/>
+    </capability>
+    <capability namespace="osgi.wiring.package">
+      <attribute name="osgi.wiring.package" value="org.apache.wml"/>
+      <attribute name="version" type="Version" value="2.9.1"/>
+      <attribute name="bundle-symbolic-name" value="com.springsource.org.apache.xerces"/>
+      <attribute name="bundle-version" type="Version" value="2.9.1"/>
+      <directive name="uses" value="org.w3c.dom"/>
+    </capability>
+    <capability namespace="osgi.wiring.package">
+      <attribute name="osgi.wiring.package" value="org.apache.wml.dom"/>
+      <attribute name="version" type="Version" value="2.9.1"/>
+      <attribute name="bundle-symbolic-name" value="com.springsource.org.apache.xerces"/>
+      <attribute name="bundle-version" type="Version" value="2.9.1"/>
+      <directive name="uses" value="org.apache.wml,org.apache.xerces.dom,org.w3c.dom"/>
+    </capability>
+    <capability namespace="osgi.wiring.package">
+      <attribute name="osgi.wiring.package" value="org.apache.xerces.dom"/>
+      <attribute name="version" type="Version" value="2.9.1"/>
+      <attribute name="bundle-symbolic-name" value="com.springsource.org.apache.xerces"/>
+      <attribute name="bundle-version" type="Version" value="2.9.1"/>
+      <directive name="uses" value="org.apache.xerces.dom3.as,org.apache.xerces.impl,org.apache.xerces.impl.dtd,org.apache.xerces.impl.validation,org.apache.xerces.impl.xs,org.apache.xerces.util,org.apache.xerces.xni,org.apache.xerces.xni.parser,org.apache.xerces.xs,org.w3c.dom,org.w3c.dom.events,org.w3c.dom.ls,org.w3c.dom.ranges,org.w3c.dom.traversal"/>
+    </capability>
+    <capability namespace="osgi.wiring.package">
+      <attribute name="osgi.wiring.package" value="org.apache.xerces.dom.events"/>
+      <attribute name="version" type="Version" value="2.9.1"/>
+      <attribute name="bundle-symbolic-name" value="com.springsource.org.apache.xerces"/>
+      <attribute name="bundle-version" type="Version" value="2.9.1"/>
+      <directive name="uses" value="org.w3c.dom,org.w3c.dom.events,org.w3c.dom.views"/>
+    </capability>
+    <capability namespace="osgi.wiring.package">
+      <attribute name="osgi.wiring.package" value="org.apache.xerces.dom3.as"/>
+      <attribute name="version" type="Version" value="2.9.1"/>
+      <attribute name="bundle-symbolic-name" value="com.springsource.org.apache.xerces"/>
+      <attribute name="bundle-version" type="Version" value="2.9.1"/>
+      <directive name="uses" value="org.w3c.dom,org.w3c.dom.ls"/>
+    </capability>
+    <capability namespace="osgi.wiring.package">
+      <attribute name="osgi.wiring.package" value="org.apache.xerces.impl"/>
+      <attribute name="version" type="Version" value="2.9.1"/>
+      <attribute name="bundle-symbolic-name" value="com.springsource.org.apache.xerces"/>
+      <attribute name="bundle-version" type="Version" value="2.9.1"/>
+      <directive name="uses" value="org.apache.xerces.impl.dtd,org.apache.xerces.util,org.apache.xerces.xni,org.apache.xerces.xni.grammars,org.apache.xerces.xni.parser,org.xml.sax"/>
+    </capability>
+    <capability namespace="osgi.wiring.package">
+      <attribute name="osgi.wiring.package" value="org.apache.xerces.impl.dtd"/>
+      <attribute name="version" type="Version" value="2.9.1"/>
+      <attribute name="bundle-symbolic-name" value="com.springsource.org.apache.xerces"/>
+      <attribute name="bundle-version" type="Version" value="2.9.1"/>
+      <directive name="uses" value="org.apache.xerces.impl,org.apache.xerces.impl.dtd.models,org.apache.xerces.impl.dv,org.apache.xerces.impl.validation,org.apache.xerces.util,org.apache.xerces.xni,org.apache.xerces.xni.grammars,org.apache.xerces.xni.parser"/>
+    </capability>
+    <capability namespace="osgi.wiring.package">
+      <attribute name="osgi.wiring.package" value="org.apache.xerces.impl.dtd.models"/>
+      <attribute name="version" type="Version" value="2.9.1"/>
+      <attribute name="bundle-symbolic-name" value="com.springsource.org.apache.xerces"/>
+      <attribute name="bundle-version" type="Version" value="2.9.1"/>
+      <directive name="uses" value="org.apache.xerces.xni"/>
+    </capability>
+    <capability namespace="osgi.wiring.package">
+      <attribute name="osgi.wiring.package" value="org.apache.xerces.impl.dv"/>
+      <attribute name="version" type="Version" value="2.9.1"/>
+      <attribute name="bundle-symbolic-name" value="com.springsource.org.apache.xerces"/>
+      <attribute name="bundle-version" type="Version" value="2.9.1"/>
+      <directive name="uses" value="org.apache.xerces.util,org.apache.xerces.xs"/>
+    </capability>
+    <capability namespace="osgi.wiring.package">
+      <attribute name="osgi.wiring.package" value="org.apache.xerces.impl.dv.dtd"/>
+      <attribute name="version" type="Version" value="2.9.1"/>
+      <attribute name="bundle-symbolic-name" value="com.springsource.org.apache.xerces"/>
+      <attribute name="bundle-version" type="Version" value="2.9.1"/>
+      <directive name="uses" value="org.apache.xerces.impl.dv"/>
+    </capability>
+    <capability namespace="osgi.wiring.package">
+      <attribute name="osgi.wiring.package" value="org.apache.xerces.impl.dv.util"/>
+      <attribute name="version" type="Version" value="2.9.1"/>
+      <attribute name="bundle-symbolic-name" value="com.springsource.org.apache.xerces"/>
+      <attribute name="bundle-version" type="Version" value="2.9.1"/>
+      <directive name="uses" value="org.apache.xerces.xs,org.apache.xerces.xs.datatypes"/>
+    </capability>
+    <capability namespace="osgi.wiring.package">
+      <attribute name="osgi.wiring.package" value="org.apache.xerces.impl.dv.xs"/>
+      <attribute name="version" type="Version" value="2.9.1"/>
+      <attribute name="bundle-symbolic-name" value="com.springsource.org.apache.xerces"/>
+      <attribute name="bundle-version" type="Version" value="2.9.1"/>
+      <directive name="uses" value="javax.xml.datatype,javax.xml.namespace,org.apache.xerces.impl.dv,org.apache.xerces.impl.dv.util,org.apache.xerces.impl.xs,org.apache.xerces.util,org.apache.xerces.xni,org.apache.xerces.xs,org.apache.xerces.xs.datatypes,org.w3c.dom"/>
+    </capability>
+    <capability namespace="osgi.wiring.package">
+      <attribute name="osgi.wiring.package" value="org.apache.xerces.impl.io"/>
+      <attribute name="version" type="Version" value="2.9.1"/>
+      <attribute name="bundle-symbolic-name" value="com.springsource.org.apache.xerces"/>
+      <attribute name="bundle-version" type="Version" value="2.9.1"/>
+      <directive name="uses" value="org.apache.xerces.util"/>
+    </capability>
+    <capability namespace="osgi.wiring.package">
+      <attribute name="osgi.wiring.package" value="org.apache.xerces.impl.msg"/>
+      <attribute name="version" type="Version" value="2.9.1"/>
+      <attribute name="bundle-symbolic-name" value="com.springsource.org.apache.xerces"/>
+      <attribute name="bundle-version" type="Version" value="2.9.1"/>
+      <directive name="uses" value="org.apache.xerces.util"/>
+    </capability>
+    <capability namespace="osgi.wiring.package">
+      <attribute name="osgi.wiring.package" value="org.apache.xerces.impl.validation"/>
+      <attribute name="version" type="Version" value="2.9.1"/>
+      <attribute name="bundle-symbolic-name" value="com.springsource.org.apache.xerces"/>
+      <attribute name="bundle-version" type="Version" value="2.9.1"/>
+      <directive name="uses" value="org.apache.xerces.impl.dv,org.apache.xerces.util,org.apache.xerces.xni"/>
+    </capability>
+    <capability namespace="osgi.wiring.package">
+      <attribute name="osgi.wiring.package" value="org.apache.xerces.impl.xpath"/>
+      <attribute name="version" type="Version" value="2.9.1"/>
+      <attribute name="bundle-symbolic-name" value="com.springsource.org.apache.xerces"/>
+      <attribute name="bundle-version" type="Version" value="2.9.1"/>
+      <directive name="uses" value="org.apache.xerces.util,org.apache.xerces.xni"/>
+    </capability>
+    <capability namespace="osgi.wiring.package">
+      <attribute name="osgi.wiring.package" value="org.apache.xerces.impl.xpath.regex"/>
+      <attribute name="version" type="Version" value="2.9.1"/>
+      <attribute name="bundle-symbolic-name" value="com.springsource.org.apache.xerces"/>
+      <attribute name="bundle-version" type="Version" value="2.9.1"/>
+    </capability>
+    <capability namespace="osgi.wiring.package">
+      <attribute name="osgi.wiring.package" value="org.apache.xerces.impl.xs"/>
+      <attribute name="version" type="Version" value="2.9.1"/>
+      <attribute name="bundle-symbolic-name" value="com.springsource.org.apache.xerces"/>
+      <attribute name="bundle-version" type="Version" value="2.9.1"/>
+      <directive name="uses" value="org.apache.xerces.dom,org.apache.xerces.impl,org.apache.xerces.impl.dv,org.apache.xerces.impl.dv.xs,org.apache.xerces.impl.xs.identity,org.apache.xerces.impl.xs.models,org.apache.xerces.impl.xs.util,org.apache.xerces.parsers,org.apache.xerces.util,org.apache.xerces.xni,org.apache.xerces.xni.grammars,org.apache.xerces.xni.parser,org.apache.xerces.xs,org.w3c.dom,org.w3c.dom.ls,org.xml.sax"/>
+    </capability>
+    <capability namespace="osgi.wiring.package">
+      <attribute name="osgi.wiring.package" value="org.apache.xerces.impl.xs.identity"/>
+      <attribute name="version" type="Version" value="2.9.1"/>
+      <attribute name="bundle-symbolic-name" value="com.springsource.org.apache.xerces"/>
+      <attribute name="bundle-version" type="Version" value="2.9.1"/>
+      <directive name="uses" value="org.apache.xerces.impl.xpath,org.apache.xerces.impl.xs,org.apache.xerces.util,org.apache.xerces.xni,org.apache.xerces.xs"/>
+    </capability>
+    <capability namespace="osgi.wiring.package">
+      <attribute name="osgi.wiring.package" value="org.apache.xerces.impl.xs.models"/>
+      <attribute name="version" type="Version" value="2.9.1"/>
+      <attribute name="bundle-symbolic-name" value="com.springsource.org.apache.xerces"/>
+      <attribute name="bundle-version" type="Version" value="2.9.1"/>
+      <directive name="uses" value="org.apache.xerces.impl.dtd.models,org.apache.xerces.impl.xs,org.apache.xerces.xni,org.apache.xerces.xni.parser"/>
+    </capability>
+    <capability namespace="osgi.wiring.package">
+      <attribute name="osgi.wiring.package" value="org.apache.xerces.impl.xs.opti"/>
+      <attribute name="version" type="Version" value="2.9.1"/>
+      <attribute name="bundle-symbolic-name" value="com.springsource.org.apache.xerces"/>
+      <attribute name="bundle-version" type="Version" value="2.9.1"/>
+      <directive name="uses" value="org.apache.xerces.parsers,org.apache.xerces.util,org.apache.xerces.xni,org.apache.xerces.xni.grammars,org.apache.xerces.xni.parser,org.w3c.dom"/>
+    </capability>
+    <capability namespace="osgi.wiring.package">
+      <attribute name="osgi.wiring.package" value="org.apache.xerces.impl.xs.traversers"/>
+      <attribute name="version" type="Version" value="2.9.1"/>
+      <attribute name="bundle-symbolic-name" value="com.springsource.org.apache.xerces"/>
+      <attribute name="bundle-version" type="Version" value="2.9.1"/>
+      <directive name="uses" value="org.apache.xerces.impl.dv,org.apache.xerces.impl.xs,org.apache.xerces.impl.xs.identity,org.apache.xerces.impl.xs.opti,org.apache.xerces.impl.xs.util,org.apache.xerces.util,org.apache.xerces.xni,org.apache.xerces.xni.grammars,org.apache.xerces.xni.parser,org.apache.xerces.xs,org.w3c.dom,org.xml.sax"/>
+    </capability>
+    <capability namespace="osgi.wiring.package">
+      <attribute name="osgi.wiring.package" value="org.apache.xerces.impl.xs.util"/>
+      <attribute name="version" type="Version" value="2.9.1"/>
+      <attribute name="bundle-symbolic-name" value="com.springsource.org.apache.xerces"/>
+      <attribute name="bundle-version" type="Version" value="2.9.1"/>
+      <directive name="uses" value="org.apache.xerces.util,org.apache.xerces.xni,org.apache.xerces.xs"/>
+    </capability>
+    <capability namespace="osgi.wiring.package">
+      <attribute name="osgi.wiring.package" value="org.apache.xerces.jaxp"/>
+      <attribute name="version" type="Version" value="2.9.1"/>
+      <attribute name="bundle-symbolic-name" value="com.springsource.org.apache.xerces"/>
+      <attribute name="bundle-version" type="Version" value="2.9.1"/>
+      <directive name="uses" value="javax.xml.parsers,javax.xml.validation,org.apache.xerces.impl,org.apache.xerces.impl.validation,org.apache.xerces.impl.xs.opti,org.apache.xerces.jaxp.validation,org.apache.xerces.parsers,org.apache.xerces.util,org.apache.xerces.xni,org.apache.xerces.xni.parser,org.apache.xerces.xs,org.w3c.dom,org.w3c.dom.ls,org.xml.sax,org.xml.sax.helpers"/>
+    </capability>
+    <capability namespace="osgi.wiring.package">
+      <attribute name="osgi.wiring.package" value="org.apache.xerces.jaxp.datatype"/>
+      <attribute name="version" type="Version" value="2.9.1"/>
+      <attribute name="bundle-symbolic-name" value="com.springsource.org.apache.xerces"/>
+      <attribute name="bundle-version" type="Version" value="2.9.1"/>
+      <directive name="uses" value="javax.xml.datatype,javax.xml.namespace"/>
+    </capability>
+    <capability namespace="osgi.wiring.package">
+      <attribute name="osgi.wiring.package" value="org.apache.xerces.jaxp.validation"/>
+      <attribute name="version" type="Version" value="2.9.1"/>
+      <attribute name="bundle-symbolic-name" value="com.springsource.org.apache.xerces"/>
+      <attribute name="bundle-version" type="Version" value="2.9.1"/>
+      <directive name="uses" value="javax.xml.transform,javax.xml.transform.dom,javax.xml.transform.stream,javax.xml.validation,org.apache.xerces.impl.validation,org.apache.xerces.util,org.apache.xerces.xni,org.apache.xerces.xni.grammars,org.apache.xerces.xni.parser,org.apache.xerces.xs,org.w3c.dom,org.w3c.dom.ls,org.xml.sax,org.xml.sax.ext"/>
+    </capability>
+    <capability namespace="osgi.wiring.package">
+      <attribute name="osgi.wiring.package" value="org.apache.xerces.parsers"/>
+      <attribute name="version" type="Version" value="2.9.1"/>
+      <attribute name="bundle-symbolic-name" value="com.springsource.org.apache.xerces"/>
+      <attribute name="bundle-version" type="Version" value="2.9.1"/>
+      <directive name="uses" value="org.apache.xerces.dom3.as,org.apache.xerces.impl,org.apache.xerces.impl.dtd,org.apache.xerces.impl.dv,org.apache.xerces.impl.validation,org.apache.xerces.impl.xs,org.apache.xerces.util,org.apache.xerces.xni,org.apache.xerces.xni.grammars,org.apache.xerces.xni.parser,org.apache.xerces.xs,org.w3c.dom,org.w3c.dom.ls,org.xml.sax,org.xml.sax.ext"/>
+    </capability>
+    <capability namespace="osgi.wiring.package">
+      <attribute name="osgi.wiring.package" value="org.apache.xerces.util"/>
+      <attribute name="version" type="Version" value="2.9.1"/>
+      <attribute name="bundle-symbolic-name" value="com.springsource.org.apache.xerces"/>
+      <attribute name="bundle-version" type="Version" value="2.9.1"/>
+      <directive name="uses" value="javax.xml.namespace,org.apache.xerces.impl,org.apache.xerces.xni,org.apache.xerces.xni.grammars,org.apache.xerces.xni.parser,org.w3c.dom,org.w3c.dom.ls,org.xml.sax,org.xml.sax.ext"/>
+    </capability>
+    <capability namespace="osgi.wiring.package">
+      <attribute name="osgi.wiring.package" value="org.apache.xerces.xinclude"/>
+      <attribute name="version" type="Version" value="2.9.1"/>
+      <attribute name="bundle-symbolic-name" value="com.springsource.org.apache.xerces"/>
+      <attribute name="bundle-version" type="Version" value="2.9.1"/>
+      <directive name="uses" value="org.apache.xerces.impl,org.apache.xerces.util,org.apache.xerces.xni,org.apache.xerces.xni.parser"/>
+    </capability>
+    <capability namespace="osgi.wiring.package">
+      <attribute name="osgi.wiring.package" value="org.apache.xerces.xni"/>
+      <attribute name="version" type="Version" value="2.9.1"/>
+      <attribute name="bundle-symbolic-name" value="com.springsource.org.apache.xerces"/>
+      <attribute name="bundle-version" type="Version" value="2.9.1"/>
+      <directive name="uses" value="org.apache.xerces.xni.parser"/>
+    </capability>
+    <capability namespace="osgi.wiring.package">
+      <attribute name="osgi.wiring.package" value="org.apache.xerces.xni.grammars"/>
+      <attribute name="version" type="Version" value="2.9.1"/>
+      <attribute name="bundle-symbolic-name" value="com.springsource.org.apache.xerces"/>
+      <attribute name="bundle-version" type="Version" value="2.9.1"/>
+      <directive name="uses" value="org.apache.xerces.xni,org.apache.xerces.xni.parser,org.apache.xerces.xs"/>
+    </capability>
+    <capability namespace="osgi.wiring.package">
+      <attribute name="osgi.wiring.package" value="org.apache.xerces.xni.parser"/>
+      <attribute name="version" type="Version" value="2.9.1"/>
+      <attribute name="bundle-symbolic-name" value="com.springsource.org.apache.xerces"/>
+      <attribute name="bundle-version" type="Version" value="2.9.1"/>
+      <directive name="uses" value="org.apache.xerces.xni"/>
+    </capability>
+    <capability namespace="osgi.wiring.package">
+      <attribute name="osgi.wiring.package" value="org.apache.xerces.xpointer"/>
+      <attribute name="version" type="Version" value="2.9.1"/>
+      <attribute name="bundle-symbolic-name" value="com.springsource.org.apache.xerces"/>
+      <attribute name="bundle-version" type="Version" value="2.9.1"/>
+      <directive name="uses" value="org.apache.xerces.impl,org.apache.xerces.util,org.apache.xerces.xinclude,org.apache.xerces.xni,org.apache.xerces.xni.parser"/>
+    </capability>
+    <capability namespace="osgi.wiring.package">
+      <attribute name="osgi.wiring.package" value="org.apache.xerces.xs"/>
+      <attribute name="version" type="Version" value="2.9.1"/>
+      <attribute name="bundle-symbolic-name" value="com.springsource.org.apache.xerces"/>
+      <attribute name="bundle-version" type="Version" value="2.9.1"/>
+      <directive name="uses" value="org.w3c.dom,org.w3c.dom.ls"/>
+    </capability>
+    <capability namespace="osgi.wiring.package">
+      <attribute name="osgi.wiring.package" value="org.apache.xerces.xs.datatypes"/>
+      <attribute name="version" type="Version" value="2.9.1"/>
+      <attribute name="bundle-symbolic-name" value="com.springsource.org.apache.xerces"/>
+      <attribute name="bundle-version" type="Version" value="2.9.1"/>
+      <directive name="uses" value="javax.xml.datatype,javax.xml.namespace,org.apache.xerces.xni,org.apache.xerces.xs"/>
+    </capability>
+    <capability namespace="osgi.wiring.package">
+      <attribute name="osgi.wiring.package" value="org.apache.xml.serialize"/>
+      <attribute name="version" type="Version" value="2.9.1"/>
+      <attribute name="bundle-symbolic-name" value="com.springsource.org.apache.xerces"/>
+      <attribute name="bundle-version" type="Version" value="2.9.1"/>
+      <directive name="uses" value="org.w3c.dom,org.w3c.dom.ls,org.xml.sax,org.xml.sax.ext"/>
+    </capability>
+    <requirement namespace="osgi.wiring.package">
+      <directive name="filter" value="(&amp;(osgi.wiring.package=javax.xml.datatype)(version&gt;=0.0.0))"/>
+    </requirement>
+    <requirement namespace="osgi.wiring.package">
+      <directive name="filter" value="(&amp;(osgi.wiring.package=javax.xml.namespace)(version&gt;=0.0.0))"/>
+    </requirement>
+    <requirement namespace="osgi.wiring.package">
+      <directive name="filter" value="(&amp;(osgi.wiring.package=javax.xml.parsers)(version&gt;=0.0.0))"/>
+    </requirement>
+    <requirement namespace="osgi.wiring.package">
+      <directive name="filter" value="(&amp;(osgi.wiring.package=javax.xml.transform)(version&gt;=0.0.0))"/>
+    </requirement>
+    <requirement namespace="osgi.wiring.package">
+      <directive name="filter" value="(&amp;(osgi.wiring.package=javax.xml.transform.dom)(version&gt;=0.0.0))"/>
+    </requirement>
+    <requirement namespace="osgi.wiring.package">
+      <directive name="filter" value="(&amp;(osgi.wiring.package=javax.xml.transform.sax)(version&gt;=0.0.0))"/>
+    </requirement>
+    <requirement namespace="osgi.wiring.package">
+      <directive name="filter" value="(&amp;(osgi.wiring.package=javax.xml.transform.stream)(version&gt;=0.0.0))"/>
+    </requirement>
+    <requirement namespace="osgi.wiring.package">
+      <directive name="filter" value="(&amp;(osgi.wiring.package=javax.xml.validation)(version&gt;=0.0.0))"/>
+    </requirement>
+    <requirement namespace="osgi.wiring.package">
+      <directive name="filter" value="(&amp;(osgi.wiring.package=org.apache.xml.resolver)(version&gt;=1.2.0)(!(version&gt;=1.3.0)))"/>
+    </requirement>
+    <requirement namespace="osgi.wiring.package">
+      <directive name="filter" value="(&amp;(osgi.wiring.package=org.apache.xml.resolver.readers)(version&gt;=1.2.0)(!(version&gt;=1.3.0)))"/>
+    </requirement>
+    <requirement namespace="osgi.wiring.package">
+      <directive name="filter" value="(&amp;(osgi.wiring.package=org.w3c.dom)(version&gt;=0.0.0))"/>
+    </requirement>
+    <requirement namespace="osgi.wiring.package">
+      <directive name="filter" value="(&amp;(osgi.wiring.package=org.w3c.dom.events)(version&gt;=0.0.0))"/>
+    </requirement>
+    <requirement namespace="osgi.wiring.package">
+      <directive name="filter" value="(&amp;(osgi.wiring.package=org.w3c.dom.html)(version&gt;=0.0.0))"/>
+    </requirement>
+    <requirement namespace="osgi.wiring.package">
+      <directive name="filter" value="(&amp;(osgi.wiring.package=org.w3c.dom.ls)(version&gt;=0.0.0))"/>
+    </requirement>
+    <requirement namespace="osgi.wiring.package">
+      <directive name="filter" value="(&amp;(osgi.wiring.package=org.w3c.dom.ranges)(version&gt;=0.0.0))"/>
+    </requirement>
+    <requirement namespace="osgi.wiring.package">
+      <directive name="filter" value="(&amp;(osgi.wiring.package=org.w3c.dom.traversal)(version&gt;=0.0.0))"/>
+    </requirement>
+    <requirement namespace="osgi.wiring.package">
+      <directive name="filter" value="(&amp;(osgi.wiring.package=org.w3c.dom.views)(version&gt;=0.0.0))"/>
+    </requirement>
+    <requirement namespace="osgi.wiring.package">
+      <directive name="filter" value="(&amp;(osgi.wiring.package=org.xml.sax)(version&gt;=0.0.0))"/>
+    </requirement>
+    <requirement namespace="osgi.wiring.package">
+      <directive name="filter" value="(&amp;(osgi.wiring.package=org.xml.sax.ext)(version&gt;=0.0.0))"/>
+    </requirement>
+    <requirement namespace="osgi.wiring.package">
+      <directive name="filter" value="(&amp;(osgi.wiring.package=org.xml.sax.helpers)(version&gt;=0.0.0))"/>
+    </requirement>
+    <requirement namespace="osgi.wiring.host">
+      <directive name="filter" value="(&amp;(osgi.wiring.host=com.springsource.org.apache.xmlcommons)(bundle-version&gt;=1.3.4)(bundle-version&lt;=1.3.4))"/>
+    </requirement>
+  </resource>
+  <resource>
+    <capability namespace="osgi.identity">
+      <attribute name="osgi.identity" value="com.springsource.org.apache.xml.resolver"/>
+      <attribute name="type" value="osgi.bundle"/>
+      <attribute name="version" type="Version" value="1.2.0"/>
+    </capability>
+    <capability namespace="osgi.content">
+      <attribute name="osgi.content" value="71b81ecd921e1bda0e0603179e55f68c7b5e66697da309f9943744876bc85920"/>
+      <attribute name="url" value="com.springsource.org.apache.xml.resolver/com.springsource.org.apache.xml.resolver-1.2.0.jar"/>
+      <attribute name="size" type="Long" value="84866"/>
+      <attribute name="mime" value="application/vnd.osgi.bundle"/>
+    </capability>
+    <capability namespace="osgi.wiring.bundle">
+      <attribute name="osgi.wiring.bundle" value="com.springsource.org.apache.xml.resolver"/>
+      <attribute name="bundle-version" type="Version" value="1.2.0"/>
+    </capability>
+    <capability namespace="osgi.wiring.host">
+      <attribute name="osgi.wiring.host" value="com.springsource.org.apache.xml.resolver"/>
+      <attribute name="bundle-version" type="Version" value="1.2.0"/>
+    </capability>
+    <capability namespace="osgi.wiring.package">
+      <attribute name="osgi.wiring.package" value="org.apache.env"/>
+      <attribute name="version" type="Version" value="1.2.0"/>
+      <attribute name="bundle-symbolic-name" value="com.springsource.org.apache.xml.resolver"/>
+      <attribute name="bundle-version" type="Version" value="1.2.0"/>
+    </capability>
+    <capability namespace="osgi.wiring.package">
+      <attribute name="osgi.wiring.package" value="org.apache.xml.resolver"/>
+      <attribute name="version" type="Version" value="1.2.0"/>
+      <attribute name="bundle-symbolic-name" value="com.springsource.org.apache.xml.resolver"/>
+      <attribute name="bundle-version" type="Version" value="1.2.0"/>
+      <directive name="uses" value="org.apache.xml.resolver.helpers,org.apache.xml.resolver.readers"/>
+    </capability>
+    <capability namespace="osgi.wiring.package">
+      <attribute name="osgi.wiring.package" value="org.apache.xml.resolver.apps"/>
+      <attribute name="version" type="Version" value="1.2.0"/>
+      <attribute name="bundle-symbolic-name" value="com.springsource.org.apache.xml.resolver"/>
+      <attribute name="bundle-version" type="Version" value="1.2.0"/>
+      <directive name="uses" value="org.xml.sax"/>
+    </capability>
+    <capability namespace="osgi.wiring.package">
+      <attribute name="osgi.wiring.package" value="org.apache.xml.resolver.etc"/>
+      <attribute name="version" type="Version" value="1.2.0"/>
+      <attribute name="bundle-symbolic-name" value="com.springsource.org.apache.xml.resolver"/>
+      <attribute name="bundle-version" type="Version" value="1.2.0"/>
+    </capability>
+    <capability namespace="osgi.wiring.package">
+      <attribute name="osgi.wiring.package" value="org.apache.xml.resolver.helpers"/>
+      <attribute name="version" type="Version" value="1.2.0"/>
+      <attribute name="bundle-symbolic-name" value="com.springsource.org.apache.xml.resolver"/>
+      <attribute name="bundle-version" type="Version" value="1.2.0"/>
+      <directive name="uses" value="javax.xml.transform,org.w3c.dom,org.xml.sax"/>
+    </capability>
+    <capability namespace="osgi.wiring.package">
+      <attribute name="osgi.wiring.package" value="org.apache.xml.resolver.readers"/>
+      <attribute name="version" type="Version" value="1.2.0"/>
+      <attribute name="bundle-symbolic-name" value="com.springsource.org.apache.xml.resolver"/>
+      <attribute name="bundle-version" type="Version" value="1.2.0"/>
+      <directive name="uses" value="javax.xml.parsers,org.apache.xml.resolver,org.w3c.dom,org.xml.sax"/>
+    </capability>
+    <capability namespace="osgi.wiring.package">
+      <attribute name="osgi.wiring.package" value="org.apache.xml.resolver.tools"/>
+      <attribute name="version" type="Version" value="1.2.0"/>
+      <attribute name="bundle-symbolic-name" value="com.springsource.org.apache.xml.resolver"/>
+      <attribute name="bundle-version" type="Version" value="1.2.0"/>
+      <directive name="uses" value="javax.xml.transform,org.apache.xml.resolver,org.xml.sax"/>
+    </capability>
+    <requirement namespace="osgi.wiring.package">
+      <directive name="filter" value="(osgi.wiring.package=javax.xml.parsers)"/>
+    </requirement>
+    <requirement namespace="osgi.wiring.package">
+      <directive name="filter" value="(osgi.wiring.package=javax.xml.transform)"/>
+    </requirement>
+    <requirement namespace="osgi.wiring.package">
+      <directive name="filter" value="(osgi.wiring.package=javax.xml.transform.sax)"/>
+    </requirement>
+    <requirement namespace="osgi.wiring.package">
+      <directive name="filter" value="(osgi.wiring.package=org.w3c.dom)"/>
+    </requirement>
+    <requirement namespace="osgi.wiring.package">
+      <directive name="filter" value="(osgi.wiring.package=org.xml.sax)"/>
+    </requirement>
+    <requirement namespace="osgi.wiring.package">
+      <directive name="filter" value="(osgi.wiring.package=org.xml.sax.helpers)"/>
+    </requirement>
+  </resource>
+  <resource>
+    <capability namespace="osgi.identity">
+      <attribute name="osgi.identity" value="com.springsource.org.apache.xmlcommons"/>
+      <attribute name="type" value="osgi.bundle"/>
+      <attribute name="version" type="Version" value="1.3.4"/>
+    </capability>
+    <capability namespace="osgi.content">
+      <attribute name="osgi.content" value="8338efe207ed48e878e63d15a969b7aaa0c3acf059278919ccade667f930a41f"/>
+      <attribute name="url" value="com.springsource.org.apache.xmlcommons/com.springsource.org.apache.xmlcommons-1.3.4.jar"/>
+      <attribute name="size" type="Long" value="199320"/>
+      <attribute name="mime" value="application/vnd.osgi.bundle"/>
+    </capability>
+    <capability namespace="osgi.wiring.bundle">
+      <attribute name="osgi.wiring.bundle" value="com.springsource.org.apache.xmlcommons"/>
+      <attribute name="bundle-version" type="Version" value="1.3.4"/>
+    </capability>
+    <capability namespace="osgi.wiring.host">
+      <attribute name="osgi.wiring.host" value="com.springsource.org.apache.xmlcommons"/>
+      <attribute name="bundle-version" type="Version" value="1.3.4"/>
+    </capability>
+    <capability namespace="osgi.wiring.package">
+      <attribute name="osgi.wiring.package" value="javax.xml"/>
+      <attribute name="version" type="Version" value="1.3.4"/>
+      <attribute name="bundle-symbolic-name" value="com.springsource.org.apache.xmlcommons"/>
+      <attribute name="bundle-version" type="Version" value="1.3.4"/>
+    </capability>
+    <capability namespace="osgi.wiring.package">
+      <attribute name="osgi.wiring.package" value="javax.xml.datatype"/>
+      <attribute name="version" type="Version" value="1.3.4"/>
+      <attribute name="bundle-symbolic-name" value="com.springsource.org.apache.xmlcommons"/>
+      <attribute name="bundle-version" type="Version" value="1.3.4"/>
+      <directive name="uses" value="javax.xml.namespace"/>
+    </capability>
+    <capability namespace="osgi.wiring.package">
+      <attribute name="osgi.wiring.package" value="javax.xml.namespace"/>
+      <attribute name="version" type="Version" value="1.3.4"/>
+      <attribute name="bundle-symbolic-name" value="com.springsource.org.apache.xmlcommons"/>
+      <attribute name="bundle-version" type="Version" value="1.3.4"/>
+    </capability>
+    <capability namespace="osgi.wiring.package">
+      <attribute name="osgi.wiring.package" value="javax.xml.parsers"/>
+      <attribute name="version" type="Version" value="1.3.4"/>
+      <attribute name="bundle-symbolic-name" value="com.springsource.org.apache.xmlcommons"/>
+      <attribute name="bundle-version" type="Version" value="1.3.4"/>
+      <directive name="uses" value="javax.xml.validation,org.w3c.dom,org.xml.sax,org.xml.sax.helpers"/>
+    </capability>
+    <capability namespace="osgi.wiring.package">
+      <attribute name="osgi.wiring.package" value="javax.xml.transform"/>
+      <attribute name="version" type="Version" value="1.3.4"/>
+      <attribute name="bundle-symbolic-name" value="com.springsource.org.apache.xmlcommons"/>
+      <attribute name="bundle-version" type="Version" value="1.3.4"/>
+    </capability>
+    <capability namespace="osgi.wiring.package">
+      <attribute name="osgi.wiring.package" value="javax.xml.transform.dom"/>
+      <attribute name="version" type="Version" value="1.3.4"/>
+      <attribute name="bundle-symbolic-name" value="com.springsource.org.apache.xmlcommons"/>
+      <attribute name="bundle-version" type="Version" value="1.3.4"/>
+      <directive name="uses" value="javax.xml.transform,org.w3c.dom"/>
+    </capability>
+    <capability namespace="osgi.wiring.package">
+      <attribute name="osgi.wiring.package" value="javax.xml.transform.sax"/>
+      <attribute name="version" type="Version" value="1.3.4"/>
+      <attribute name="bundle-symbolic-name" value="com.springsource.org.apache.xmlcommons"/>
+      <attribute name="bundle-version" type="Version" value="1.3.4"/>
+      <directive name="uses" value="javax.xml.transform,org.xml.sax,org.xml.sax.ext"/>
+    </capability>
+    <capability namespace="osgi.wiring.package">
+      <attribute name="osgi.wiring.package" value="javax.xml.transform.stream"/>
+      <attribute name="version" type="Version" value="1.3.4"/>
+      <attribute name="bundle-symbolic-name" value="com.springsource.org.apache.xmlcommons"/>
+      <attribute name="bundle-version" type="Version" value="1.3.4"/>
+      <directive name="uses" value="javax.xml.transform"/>
+    </capability>
+    <capability namespace="osgi.wiring.package">
+      <attribute name="osgi.wiring.package" value="javax.xml.validation"/>
+      <attribute name="version" type="Version" value="1.3.4"/>
+      <attribute name="bundle-symbolic-name" value="com.springsource.org.apache.xmlcommons"/>
+      <attribute name="bundle-version" type="Version" value="1.3.4"/>
+      <directive name="uses" value="javax.xml.transform,org.w3c.dom,org.w3c.dom.ls,org.xml.sax"/>
+    </capability>
+    <capability namespace="osgi.wiring.package">
+      <attribute name="osgi.wiring.package" value="javax.xml.xpath"/>
+      <attribute name="version" type="Version" value="1.3.4"/>
+      <attribute name="bundle-symbolic-name" value="com.springsource.org.apache.xmlcommons"/>
+      <attribute name="bundle-version" type="Version" value="1.3.4"/>
+      <directive name="uses" value="javax.xml.namespace,org.xml.sax"/>
+    </capability>
+    <capability namespace="osgi.wiring.package">
+      <attribute name="osgi.wiring.package" value="org.apache.xmlcommons"/>
+      <attribute name="version" type="Version" value="1.3.4"/>
+      <attribute name="bundle-symbolic-name" value="com.springsource.org.apache.xmlcommons"/>
+      <attribute name="bundle-version" type="Version" value="1.3.4"/>
+    </capability>
+    <capability namespace="osgi.wiring.package">
+      <attribute name="osgi.wiring.package" value="org.w3c.dom"/>
+      <attribute name="version" type="Version" value="1.3.4"/>
+      <attribute name="bundle-symbolic-name" value="com.springsource.org.apache.xmlcommons"/>
+      <attribute name="bundle-version" type="Version" value="1.3.4"/>
+    </capability>
+    <capability namespace="osgi.wiring.package">
+      <attribute name="osgi.wiring.package" value="org.w3c.dom.bootstrap"/>
+      <attribute name="version" type="Version" value="1.3.4"/>
+      <attribute name="bundle-symbolic-name" value="com.springsource.org.apache.xmlcommons"/>
+      <attribute name="bundle-version" type="Version" value="1.3.4"/>
+      <directive name="uses" value="org.w3c.dom"/>
+    </capability>
+    <capability namespace="osgi.wiring.package">
+      <attribute name="osgi.wiring.package" value="org.w3c.dom.css"/>
+      <attribute name="version" type="Version" value="1.3.4"/>
+      <attribute name="bundle-symbolic-name" value="com.springsource.org.apache.xmlcommons"/>
+      <attribute name="bundle-version" type="Version" value="1.3.4"/>
+      <directive name="uses" value="org.w3c.dom,org.w3c.dom.stylesheets,org.w3c.dom.views"/>
+    </capability>
+    <capability namespace="osgi.wiring.package">
+      <attribute name="osgi.wiring.package" value="org.w3c.dom.events"/>
+      <attribute name="version" type="Version" value="1.3.4"/>
+      <attribute name="bundle-symbolic-name" value="com.springsource.org.apache.xmlcommons"/>
+      <attribute name="bundle-version" type="Version" value="1.3.4"/>
+      <directive name="uses" value="org.w3c.dom,org.w3c.dom.views"/>
+    </capability>
+    <capability namespace="osgi.wiring.package">
+      <attribute name="osgi.wiring.package" value="org.w3c.dom.html"/>
+      <attribute name="version" type="Version" value="1.3.4"/>
+      <attribute name="bundle-symbolic-name" value="com.springsource.org.apache.xmlcommons"/>
+      <attribute name="bundle-version" type="Version" value="1.3.4"/>
+      <directive name="uses" value="org.w3c.dom"/>
+    </capability>
+    <capability namespace="osgi.wiring.package">
+      <attribute name="osgi.wiring.package" value="org.w3c.dom.ls"/>
+      <attribute name="version" type="Version" value="1.3.4"/>
+      <attribute name="bundle-symbolic-name" value="com.springsource.org.apache.xmlcommons"/>
+      <attribute name="bundle-version" type="Version" value="1.3.4"/>
+      <directive name="uses" value="org.w3c.dom,org.w3c.dom.events,org.w3c.dom.traversal"/>
+    </capability>
+    <capability namespace="osgi.wiring.package">
+      <attribute name="osgi.wiring.package" value="org.w3c.dom.ranges"/>
+      <attribute name="version" type="Version" value="1.3.4"/>
+      <attribute name="bundle-symbolic-name" value="com.springsource.org.apache.xmlcommons"/>
+      <attribute name="bundle-version" type="Version" value="1.3.4"/>
+      <directive name="uses" value="org.w3c.dom"/>
+    </capability>
+    <capability namespace="osgi.wiring.package">
+      <attribute name="osgi.wiring.package" value="org.w3c.dom.stylesheets"/>
+      <attribute name="version" type="Version" value="1.3.4"/>
+      <attribute name="bundle-symbolic-name" value="com.springsource.org.apache.xmlcommons"/>
+      <attribute name="bundle-version" type="Version" value="1.3.4"/>
+      <directive name="uses" value="org.w3c.dom"/>
+    </capability>
+    <capability namespace="osgi.wiring.package">
+      <attribute name="osgi.wiring.package" value="org.w3c.dom.traversal"/>
+      <attribute name="version" type="Version" value="1.3.4"/>
+      <attribute name="bundle-symbolic-name" value="com.springsource.org.apache.xmlcommons"/>
+      <attribute name="bundle-version" type="Version" value="1.3.4"/>
+      <directive name="uses" value="org.w3c.dom"/>
+    </capability>
+    <capability namespace="osgi.wiring.package">
+      <attribute name="osgi.wiring.package" value="org.w3c.dom.views"/>
+      <attribute name="version" type="Version" value="1.3.4"/>
+      <attribute name="bundle-symbolic-name" value="com.springsource.org.apache.xmlcommons"/>
+      <attribute name="bundle-version" type="Version" value="1.3.4"/>
+    </capability>
+    <capability namespace="osgi.wiring.package">
+      <attribute name="osgi.wiring.package" value="org.w3c.dom.xpath"/>
+      <attribute name="version" type="Version" value="1.3.4"/>
+      <attribute name="bundle-symbolic-name" value="com.springsource.org.apache.xmlcommons"/>
+      <attribute name="bundle-version" type="Version" value="1.3.4"/>
+      <directive name="uses" value="org.w3c.dom"/>
+    </capability>
+    <capability namespace="osgi.wiring.package">
+      <attribute name="osgi.wiring.package" value="org.xml.sax"/>
+      <attribute name="version" type="Version" value="1.3.4"/>
+      <attribute name="bundle-symbolic-name" value="com.springsource.org.apache.xmlcommons"/>
+      <attribute name="bundle-version" type="Version" value="1.3.4"/>
+    </capability>
+    <capability namespace="osgi.wiring.package">
+      <attribute name="osgi.wiring.package" value="org.xml.sax.ext"/>
+      <attribute name="version" type="Version" value="1.3.4"/>
+      <attribute name="bundle-symbolic-name" value="com.springsource.org.apache.xmlcommons"/>
+      <attribute name="bundle-version" type="Version" value="1.3.4"/>
+      <directive name="uses" value="org.xml.sax,org.xml.sax.helpers"/>
+    </capability>
+    <capability namespace="osgi.wiring.package">
+      <attribute name="osgi.wiring.package" value="org.xml.sax.helpers"/>
+      <attribute name="version" type="Version" value="1.3.4"/>
+      <attribute name="bundle-symbolic-name" value="com.springsource.org.apache.xmlcommons"/>
+      <attribute name="bundle-version" type="Version" value="1.3.4"/>
+      <directive name="uses" value="org.xml.sax"/>
+    </capability>
   </resource>
   <resource>
     <capability namespace="osgi.identity">

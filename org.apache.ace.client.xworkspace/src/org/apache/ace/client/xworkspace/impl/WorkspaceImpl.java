@@ -22,9 +22,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -36,6 +38,9 @@ import java.util.jar.Attributes;
 import java.util.jar.JarInputStream;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.ace.client.repository.Association;
 import org.apache.ace.client.repository.ObjectRepository;
@@ -58,13 +63,23 @@ import org.apache.ace.client.repository.repository.Feature2DistributionAssociati
 import org.apache.ace.client.repository.repository.FeatureRepository;
 import org.apache.ace.client.repository.stateful.StatefulTargetObject;
 import org.apache.ace.client.repository.stateful.StatefulTargetRepository;
+import org.apache.ace.client.repository.stateful.StatefulTargetObject.ApprovalState;
 import org.apache.ace.client.xworkspace.Workspace;
 import org.apache.felix.dm.Component;
 import org.apache.felix.dm.DependencyManager;
+import org.apache.xerces.util.DOMUtil;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Filter;
+import org.osgi.framework.Version;
+import org.osgi.resource.Capability;
+import org.osgi.resource.Resource;
 import org.osgi.service.log.LogService;
 import org.osgi.service.useradmin.User;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
 
 public class WorkspaceImpl implements Workspace {
 
@@ -815,17 +830,170 @@ public class WorkspaceImpl implements Workspace {
     
     
     @Override
+    public void impw(String directoryPath, String exportFileName)  throws Exception {
+        try {
+        	//-- Load jar artifacts
+
+        	
+        	//--
+			DocumentBuilderFactory parserFactory = DocumentBuilderFactory.newInstance();
+			parserFactory.setNamespaceAware(true);
+
+			DocumentBuilder parser = parserFactory.newDocumentBuilder();
+			
+			File expFile = new File(directoryPath,exportFileName);
+			
+			Document doc = parser.parse(expFile);
+
+	        NodeList features = doc.getElementsByTagName("feature");
+	        for (int i = 0; i < features.getLength(); ++i) {
+	            final Node feature = features.item(i);
+	            
+	            //-- Create feature
+	            String featureId = feature.getAttributes().getNamedItem("id").getNodeValue();
+	            final FeatureObject f = cf(featureId);
+	            //final String featureId = DOMUtil.getChildText(DOMUtil.getFirstChildElement(feature,"id"));
+	            NodeList artifacts = feature.getChildNodes();
+	            for (int j=0; j<artifacts.getLength(); ++j) {
+		            final Node art = features.item(j);
+		            final String artId = DOMUtil.getChildText(DOMUtil.getFirstChildElement(art, "id"));	            	
+	            }
+/*	            final Node layer = layers.item(i + 1);
+	            String resolutions = DOMUtil.getChildText(DOMUtil.getFirstChildElement(tileSet, "Resolutions"));
+	            int width = Integer.parseInt(DOMUtil.getChildText(DOMUtil.getFirstChildElement(tileSet, "Width")));
+	            int height = Integer.parseInt(DOMUtil.getChildText(DOMUtil.getFirstChildElement(tileSet, "Height")));
+	            Element bbox = DOMUtil.getFirstChildElement(layer, "BoundingBox");
+	            float minX = Float.parseFloat(DOMUtil.getAttrValue(bbox, "minx"));
+	            float minY = Float.parseFloat(DOMUtil.getAttrValue(bbox, "miny"));
+	            float maxX = Float.parseFloat(DOMUtil.getAttrValue(bbox, "maxx"));
+	            float maxY = Float.parseFloat(DOMUtil.getAttrValue(bbox, "maxy"));
+	            String format = DOMUtil.getChildText(DOMUtil.getFirstChildElement(tileSet, "Format"));
+
+	            String layerName = DOMUtil.getChildText(DOMUtil.getFirstChildElement(layer, "Name"));
+	            final TileCacheLayerInfo info = new TileCacheLayerInfo(resolutions, width, height, minX, minY, maxX, maxY, format);
+	            result.tileCacheLayers.put(layerName, info);*/
+	        }			
+		} catch (Exception e) {
+			throw e;
+		}   	
+    }
+
+    public static Version getVersion(Resource resource) {
+        Map<String, Object> attrs = getNamespaceAttributes(resource, "osgi.identity");
+        if (attrs == null)
+            return Version.emptyVersion;
+        Version version = (Version) attrs.get("version");
+        return version == null ? Version.emptyVersion : version;
+    }
+
+    public static List<Version> getVersions(List<Resource> resources) {
+        List<Version> versions = new ArrayList<>();
+        for (Resource resource : resources) {
+            versions.add(getVersion(resource));
+        }
+        return versions;
+    }
+
+    public static String getType(Resource resource) {
+        Map<String, Object> attrs = getNamespaceAttributes(resource, "osgi.identity");
+        if (attrs == null)
+            return null;
+        return (String) attrs.get("type");
+    }
+
+    public static String getUrl(Resource resource) {
+        Map<String, Object> attrs = getNamespaceAttributes(resource, "osgi.content");
+        if (attrs == null)
+            return null;
+        URI url = (URI) attrs.get("url");
+        return url == null ? null : url.toString();
+    }
+
+    public static String getMimetype(Resource resource) {
+        Map<String, Object> attrs = getNamespaceAttributes(resource, "osgi.content");
+        if (attrs == null)
+            return null;
+
+        String mime = (String) attrs.get("mime");
+        if (mime == null) {
+            // FIXME this is a work around for OBR not supporting mimetype
+            String url = getUrl(resource);
+            if (url.endsWith(".jar")) {
+                mime = "application/vnd.osgi.bundle";
+            }
+            else if (url.endsWith(".xml")) {
+                mime = "application/xml:osgi-autoconf";
+            }
+        }
+        return mime;
+    }
+    
+    private static Map<String, Object> getNamespaceAttributes(Resource resource, String namespace) {
+        List<Capability> caps = resource.getCapabilities(namespace);
+        if (caps.isEmpty())
+            return null;
+        Map<String, Object> attrs = caps.get(0).getAttributes();
+        if (attrs == null)
+            return null;
+        return attrs;
+    }    
+    
+    @Override
     public String expw(String id, String directoryPath) throws Exception {
     	String brName = id+".bndrun";
     	StringBuilder brsb = new StringBuilder();
     	brsb.append("-include: \\\n");
     	
+
 		StringBuilder sb = new StringBuilder();
+		sb.append("<?xml version=\"1.0\"?>");
     	try {
 			DPHelper dhelper = new DPHelper(this, m_log);
+        	
+        	// download dists    		
 			Map<String,String> fmap = new HashMap<String,String>();
-			
 			sb.append("<repository id=\""+id+"\">");
+
+        	//downloads targets
+			List<StatefulTargetObject> tgts = lt();
+			sb.append("<targets>");
+			for (StatefulTargetObject tgt : tgts) {
+				String tName = tgt.getID();
+				sb.append("<target id=\""+tName+"\">");
+				List<Distribution2TargetAssociation> d2tList = ld2t("(leftEndpoint=*name="+tName+"*)");
+				sb.append("<distributionrefs>");
+				for (Distribution2TargetAssociation d2t : d2tList) {
+					Enumeration<String> keys = d2t.getAttributeKeys();
+					String dName = d2t.getAttribute("leftEndpoint");
+					List<DistributionObject> ld = ld(dName);
+					if (ld.size() > 0) {
+						dName = ld.get(0).getName();
+						fmap.put(dName,downloadFeature(directoryPath,dName,dhelper));
+						sb.append("<distributionref refid=\""+dName+"\">");
+						sb.append("</distributionref>");						
+					}
+				}
+				sb.append("</distributionrefs>");
+
+				Enumeration<String> tkeys = null;
+				try {
+					tkeys = tgt.getTagKeys();
+				} catch (Exception e) {
+				}
+				if (tkeys != null) {
+					sb.append("<tags>");
+					while (tkeys.hasMoreElements()) {
+						String key = tkeys.nextElement();
+						sb.append("<tag name=\""+key+"\" value=\""+tgt.getTag(key)+"\"/>");
+					}
+					sb.append("</tags>");			
+				}
+				sb.append("</target>");
+			}
+			
+			sb.append("</targets>");
+			
+			
 			sb.append("<distributions>");
 			List<DistributionObject> dists = ld();
 			for (DistributionObject dobj : dists) {
@@ -842,7 +1010,7 @@ public class WorkspaceImpl implements Workspace {
 						fName = lf.get(0).getName();
 						fmap.put(fName,downloadFeature(directoryPath,fName,dhelper));
 						sb.append("<featureref refid=\""+fName+"\">");
-					sb.append("</featureref>");
+						sb.append("</featureref>");
 					}
 				}
 				sb.append("</featurerefs>");
@@ -913,7 +1081,7 @@ public class WorkspaceImpl implements Workspace {
 	    			isJar = true;
 	    			id = name; 
 	    			name += "-"+ver+".jar";
-	    	   		fsb.append("<artifact id=\""+id+"\" name=\""+name+"\" version=\""+ver+"\">");
+	    	   		fsb.append("<artifact symbolicname=\""+id+"\" id=\""+id+"\" name=\""+name+"\" version=\""+ver+"\">");
 	    		}
 	    		
 	    		
@@ -1040,4 +1208,16 @@ public class WorkspaceImpl implements Workspace {
     public String toString() {
         return getSessionID();
     }
+
+	@Override
+	public void cpytgs(RepositoryObject src, RepositoryObject tgt)
+			throws Exception {
+		Enumeration<String> en = src.getTagKeys();
+		while (en.hasMoreElements()) {
+			final String tag = en.nextElement();
+			final String val = src.getTag(tag);
+			tgt.addTag(tag, val);
+		}
+		
+	}
 }
