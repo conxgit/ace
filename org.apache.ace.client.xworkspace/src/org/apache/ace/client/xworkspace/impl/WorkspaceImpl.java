@@ -940,10 +940,22 @@ public class WorkspaceImpl implements Workspace {
     
     @Override
     public String expw(String id, String directoryPath) throws Exception {
+    	return expw(id,directoryPath,null);
+    }
+    
+    @Override
+    public String expw(String id, String directoryPath, String target) throws Exception {
     	String brName = id+".bndrun";
-    	StringBuilder brsb = new StringBuilder();
-    	brsb.append("-include: \\\n");
     	
+    	StringBuilder brsb = new StringBuilder();
+    	brsb.append("-runbundles.master: org.amdatu.configurator.autoconf;version=1.0.0\\\n");
+    	brsb.append("-include: \\\n");    	
+    	
+    	StringBuilder brpropssb = new StringBuilder();
+    	brpropssb.append("-runproperties:   \\\n");
+    	
+    	StringBuilder dstsb = new StringBuilder();
+    	dstsb.append("<distributions>");
 
 		StringBuilder sb = new StringBuilder();
 		sb.append("<?xml version=\"1.0\"?>");
@@ -955,12 +967,12 @@ public class WorkspaceImpl implements Workspace {
 			sb.append("<repository id=\""+id+"\">");
 
         	//downloads targets
-			List<StatefulTargetObject> tgts = lt();
+			List<StatefulTargetObject> tgts = lt("(id="+target+")");
 			sb.append("<targets>");
 			for (StatefulTargetObject tgt : tgts) {
 				String tName = tgt.getID();
 				sb.append("<target id=\""+tName+"\">");
-				List<Distribution2TargetAssociation> d2tList = ld2t("(leftEndpoint=*name="+tName+"*)");
+				List<Distribution2TargetAssociation> d2tList = ld2t("(rightEndpoint=*id="+tName+"*)");
 				sb.append("<distributionrefs>");
 				for (Distribution2TargetAssociation d2t : d2tList) {
 					Enumeration<String> keys = d2t.getAttributeKeys();
@@ -969,8 +981,11 @@ public class WorkspaceImpl implements Workspace {
 					if (ld.size() > 0) {
 						dName = ld.get(0).getName();
 						fmap.put(dName,downloadFeature(directoryPath,dName,dhelper));
+						
 						sb.append("<distributionref refid=\""+dName+"\">");
-						sb.append("</distributionref>");						
+						sb.append("</distributionref>");	
+						
+						generateDistrXMLContent(directoryPath, dstsb, dhelper, fmap, ld.get(0));
 					}
 				}
 				sb.append("</distributionrefs>");
@@ -985,6 +1000,7 @@ public class WorkspaceImpl implements Workspace {
 					while (tkeys.hasMoreElements()) {
 						String key = tkeys.nextElement();
 						sb.append("<tag name=\""+key+"\" value=\""+tgt.getTag(key)+"\"/>");
+						brpropssb.append(key+"="+tgt.getTag(key)+",\\\n\t"); 
 					}
 					sb.append("</tags>");			
 				}
@@ -993,32 +1009,10 @@ public class WorkspaceImpl implements Workspace {
 			
 			sb.append("</targets>");
 			
-			
-			sb.append("<distributions>");
-			List<DistributionObject> dists = ld();
-			for (DistributionObject dobj : dists) {
-				String dName = dobj.getName();
-				sb.append("<distribution id=\""+dName+"\">");
-				
-				sb.append("<featurerefs>");
-				List<Feature2DistributionAssociation> f2dList = lf2d("(rightEndpoint=*name="+dName+"*)");
-				for (Feature2DistributionAssociation f2d : f2dList) {
-					Enumeration<String> keys = f2d.getAttributeKeys();
-					String fName = f2d.getAttribute("leftEndpoint");
-					List<FeatureObject> lf = lf(fName);
-					if (lf.size() > 0) {
-						fName = lf.get(0).getName();
-						fmap.put(fName,downloadFeature(directoryPath,fName,dhelper));
-						sb.append("<featureref refid=\""+fName+"\">");
-						sb.append("</featureref>");
-					}
-				}
-				sb.append("</featurerefs>");
-				
-				sb.append("</distribution>");
-			}
-			
+			dstsb.append("</distributions>");
+
 			StringBuilder fsb = new StringBuilder();
+			fsb.append(dstsb.toString());
 			fsb.append("<features>");
 			String ENDOL = ",\\\n";
 			for (String f : fmap.keySet()) {
@@ -1026,8 +1020,9 @@ public class WorkspaceImpl implements Workspace {
 				brsb.append("\t"+f+".bndrun"+ENDOL);
 			}
 			fsb.append("</features>");
+			brsb.append(brpropssb.toString());
 			
-			sb.append("</distributions>");
+
 			sb.append(fsb.toString());
 			sb.append("</repository>");
 			
@@ -1040,7 +1035,31 @@ public class WorkspaceImpl implements Workspace {
 			e.printStackTrace();
 			throw e;
 		}
-    }       
+    }
+
+	private void generateDistrXMLContent(String directoryPath,
+			StringBuilder sb, DPHelper dhelper, Map<String, String> fmap,
+			DistributionObject dobj) throws Exception {
+		String dName = dobj.getName();
+		sb.append("<distribution id=\""+dName+"\">");
+		
+		sb.append("<featurerefs>");
+		List<Feature2DistributionAssociation> f2dList = lf2d("(rightEndpoint=*name="+dName+"*)");
+		for (Feature2DistributionAssociation f2d : f2dList) {
+			Enumeration<String> keys = f2d.getAttributeKeys();
+			String fName = f2d.getAttribute("leftEndpoint");
+			List<FeatureObject> lf = lf(fName);
+			if (lf.size() > 0) {
+				fName = lf.get(0).getName();
+				fmap.put(fName,downloadFeature(directoryPath,fName,dhelper));
+				sb.append("<featureref refid=\""+fName+"\">");
+				sb.append("</featureref>");
+			}
+		}
+		sb.append("</featurerefs>");
+		
+		sb.append("</distribution>");
+	}       
 
     private String downloadFeature(String directoryPath, String fName, DPHelper dhelper) throws Exception {
     	SimpleDateFormat df = new SimpleDateFormat("YYYYMMDDHHmm");//201508261740
@@ -1085,7 +1104,8 @@ public class WorkspaceImpl implements Workspace {
 	    		}
 	    		
 	    		
-	    		File file = dhelper.downloadArtifactContents(isJar, directoryPath, name, url);
+	    		String rootDir = isJar?directoryPath+File.separatorChar+"jars":directoryPath+File.separatorChar+"config";
+	    		File file = dhelper.downloadArtifactContents(isJar, rootDir, name, url);
 	    		if (isJar) {
 		            JarInputStream jis = new JarInputStream(new FileInputStream(file));
 		            String jarVer = jis.getManifest().getMainAttributes().getValue("Bundle-Version");
