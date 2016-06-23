@@ -55,6 +55,7 @@ import org.apache.ace.client.repository.object.Distribution2TargetAssociation;
 import org.apache.ace.client.repository.object.DistributionObject;
 import org.apache.ace.client.repository.object.Feature2DistributionAssociation;
 import org.apache.ace.client.repository.object.FeatureObject;
+import org.apache.ace.client.repository.object.TargetObject;
 import org.apache.ace.client.repository.repository.Artifact2FeatureAssociationRepository;
 import org.apache.ace.client.repository.repository.ArtifactRepository;
 import org.apache.ace.client.repository.repository.Distribution2TargetAssociationRepository;
@@ -83,7 +84,8 @@ import org.xml.sax.InputSource;
 
 public class WorkspaceImpl implements Workspace {
 
-    private final String m_sessionID;
+    private static final String XML_EXTENSION = "xml";
+	private final String m_sessionID;
     private final URL m_repositoryURL;
     private final String m_storeCustomerName;
     private final String m_distributionCustomerName;
@@ -103,6 +105,7 @@ public class WorkspaceImpl implements Workspace {
     private volatile Feature2DistributionAssociationRepository m_feature2DistributionAssociationRepository;
     private volatile Distribution2TargetAssociationRepository m_distribution2TargetAssociationRepository;
     private volatile LogService m_log;
+	private List<String> processedDists = new ArrayList<>();
 
     public WorkspaceImpl(String sessionID, String repositoryURL, String customerName, String storeRepositoryName,
         String distributionRepositoryName, String deploymentRepositoryName) throws MalformedURLException {
@@ -828,12 +831,50 @@ public class WorkspaceImpl implements Workspace {
         return targetObject;
     }
     
+    @Override
+    public void impw(String directoryPath)  throws Exception {
+    	File inputDir = new File(directoryPath);
+    	if (inputDir.isDirectory()) {
+    		File[] files = inputDir.listFiles();
+    		for (File fl : files) {
+    			if (XML_EXTENSION.equalsIgnoreCase(getFileExtension(fl))) {
+    				impw(directoryPath,fl.getAbsolutePath());
+    			}
+    		}
+    	}
+    }
+    
+    
+    @Override
+    public List getTargetExportFilePaths(String directoryPath) {
+    	ArrayList<String> paths = new ArrayList<>();
+    	File inputDir = new File(directoryPath);
+    	if (inputDir.isDirectory()) {
+    		File[] files = inputDir.listFiles();
+    		for (File fl : files) {
+    			if (XML_EXTENSION.equalsIgnoreCase(getFileExtension(fl))) {
+    				paths.add(fl.getAbsolutePath());
+    			}
+    		}
+    	}   
+    	
+    	return paths;
+    }
+    
+    private String getFileExtension(File file) {
+        String name = file.getName();
+        try {
+            return name.substring(name.lastIndexOf(".") + 1);
+        } catch (Exception e) {
+            return "";
+        }
+    }
     
     @Override
     public void impw(String directoryPath, String exportFileName)  throws Exception {
+    	processedDists.clear();
         try {
-        	//-- Load jar artifacts
-
+        	//Assumption is artifacts have been added/copied to server
         	
         	//--
 			DocumentBuilderFactory parserFactory = DocumentBuilderFactory.newInstance();
@@ -841,43 +882,261 @@ public class WorkspaceImpl implements Workspace {
 
 			DocumentBuilder parser = parserFactory.newDocumentBuilder();
 			
-			File expFile = new File(directoryPath,exportFileName);
+			File expFile = new File(exportFileName);
 			
 			Document doc = parser.parse(expFile);
 
+			//==
+			//- Features
+			//==
 	        NodeList features = doc.getElementsByTagName("feature");
 	        for (int i = 0; i < features.getLength(); ++i) {
 	            final Node feature = features.item(i);
 	            
 	            //-- Create feature
-	            String featureId = feature.getAttributes().getNamedItem("id").getNodeValue();
-	            final FeatureObject f = cf(featureId);
+	            FeatureObject f = null;
+	            String featureId = ensureFeature(feature);
+				
 	            //final String featureId = DOMUtil.getChildText(DOMUtil.getFirstChildElement(feature,"id"));
-	            NodeList artifacts = feature.getChildNodes();
+	            NodeList artifacts = ((Element)feature).getElementsByTagName("artifact");
 	            for (int j=0; j<artifacts.getLength(); ++j) {
-		            final Node art = features.item(j);
-		            final String artId = DOMUtil.getChildText(DOMUtil.getFirstChildElement(art, "id"));	            	
+		            final Node art = artifacts.item(j);
+		            if (art != null && art.getNodeType() == Node.ELEMENT_NODE) {
+			            final Element firstChildElement = (Element) art;
+			            if (firstChildElement != null) {
+							final String artId = firstChildElement.getAttribute("id");
+				            final String symbolicName = firstChildElement.getAttribute("symbolicname");
+				            if (symbolicName == null || symbolicName.isEmpty()) {//Not bundle, a config file
+				            	//final String artifactName = String.format("$identity - $version",artId
+				            	ensureAutoconfArtifact2Feature(featureId,artId,firstChildElement,directoryPath+File.separator+"jars_and_configs");		            	
+				            }
+				            else {
+				            	ensureBundleArtifact2Feature(featureId,artId,firstChildElement,directoryPath+File.separator+"jars_and_configs");
+				            }
+			            }
+			            else {
+			            	System.out.println(String.format("Artifact %s of Feature %s has no first element",art,featureId));
+			            }
+		            }
 	            }
-/*	            final Node layer = layers.item(i + 1);
-	            String resolutions = DOMUtil.getChildText(DOMUtil.getFirstChildElement(tileSet, "Resolutions"));
-	            int width = Integer.parseInt(DOMUtil.getChildText(DOMUtil.getFirstChildElement(tileSet, "Width")));
-	            int height = Integer.parseInt(DOMUtil.getChildText(DOMUtil.getFirstChildElement(tileSet, "Height")));
-	            Element bbox = DOMUtil.getFirstChildElement(layer, "BoundingBox");
-	            float minX = Float.parseFloat(DOMUtil.getAttrValue(bbox, "minx"));
-	            float minY = Float.parseFloat(DOMUtil.getAttrValue(bbox, "miny"));
-	            float maxX = Float.parseFloat(DOMUtil.getAttrValue(bbox, "maxx"));
-	            float maxY = Float.parseFloat(DOMUtil.getAttrValue(bbox, "maxy"));
-	            String format = DOMUtil.getChildText(DOMUtil.getFirstChildElement(tileSet, "Format"));
-
-	            String layerName = DOMUtil.getChildText(DOMUtil.getFirstChildElement(layer, "Name"));
-	            final TileCacheLayerInfo info = new TileCacheLayerInfo(resolutions, width, height, minX, minY, maxX, maxY, format);
-	            result.tileCacheLayers.put(layerName, info);*/
-	        }			
+	        }
+	        
+			//==
+			//- Distributions
+			//==
+	        NodeList distributions = doc.getElementsByTagName("distribution");
+	        for (int i = 0; i < distributions.getLength(); ++i) {
+	            final Node distribution = distributions.item(i);
+	            
+	            //-- Create feature
+	            String distId = distribution.getAttributes().getNamedItem("id").getNodeValue();
+	            if (!processedDists.contains(distId)) {
+		            distId = ensureDistribution(distribution);
+	            	processedDists.add(distId);
+					
+		            //final String featureId = DOMUtil.getChildText(DOMUtil.getFirstChildElement(feature,"id"));
+		            NodeList featurerefs = ((Element)distribution).getElementsByTagName("featureref");
+		            for (int j=0; j<featurerefs.getLength(); ++j) {
+			            final Node feat = featurerefs.item(j);
+			            if (feat != null && feat.getNodeType() == Node.ELEMENT_NODE) {
+				            final Element firstChildElement = (Element) feat;
+				            if (firstChildElement != null) {
+								final String featureId = firstChildElement.getAttribute("refid");
+								ensureFeature2Distribution(featureId,distId,firstChildElement);
+				            }
+				            else {
+				            	System.out.println(String.format("Feature %s of Dist %s has no first element",feat,distId));
+				            }
+			            }
+		            }
+	            }
+	        }	 
+	        
+			//==
+			//- Targets
+			//==	
+	        NodeList targets = doc.getElementsByTagName("target");
+	        for (int i = 0; i < targets.getLength(); ++i) {
+	            final Node target = targets.item(i);
+	            
+	            //-- Create target
+	            String tgtId = target.getAttributes().getNamedItem("id").getNodeValue();
+	            tgtId = ensureTarget(target);
+	            
+	            //-- Dist's
+	            NodeList distrefs = ((Element)target).getElementsByTagName("distributionref");
+	            for (int j=0; j<distrefs.getLength(); ++j) {
+		            final Node feat = distrefs.item(j);
+		            if (feat != null && feat.getNodeType() == Node.ELEMENT_NODE) {
+			            final Element firstChildElement = (Element) feat;
+			            if (firstChildElement != null) {
+							final String destId = firstChildElement.getAttribute("refid");
+							ensureDist2Target(destId,tgtId,firstChildElement);
+			            }
+			            else {
+			            	System.out.println(String.format("Feature %s of Dist %s has no first element",feat,tgtId));
+			            }
+		            }
+	            }	            
+	        }		        
+	        
 		} catch (Exception e) {
+			e.printStackTrace();
 			throw e;
 		}   	
     }
+    
+	private void ensureDist2Target(String destId, String tgtId, Element featureElement) throws Exception {
+    	String filter = String.format("(leftEndpoint=*name=%s*)",destId);
+    	List<Distribution2TargetAssociation> ld2tRes = ld2t(filter);
+    	for (Distribution2TargetAssociation ld2t : ld2tRes) {
+    		dd2t(ld2t);
+    	}
+    	
+    	String leftEndpoint = String.format("(name=%s)",destId);
+    	String rightEndpoint = String.format("(id=%s)",tgtId);
+    	
+    	try {
+			cd2t(leftEndpoint,rightEndpoint,"10000","1");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 
+	private void ensureFeature2Distribution(String featureId, String distId, Element featureElement) throws Exception {
+    	String filter = String.format("(leftEndpoint=*name=%s*)",featureId);
+    	List<Feature2DistributionAssociation> lf2dRes = lf2d(filter);
+    	for (Feature2DistributionAssociation lf2d : lf2dRes) {
+    		df2d(lf2d);
+    	}
+    	
+    	String leftEndpoint = String.format("(name=%s)",featureId);
+    	String rightEndpoint = String.format("(name=%s)",distId);
+    	
+    	try {
+			cf2d(leftEndpoint,rightEndpoint,"10000","1");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private void ensureBundleArtifact2Feature(String featureId, String artId, Element firstChildElement,
+			String directoryPath) throws Exception {
+		final String id = firstChildElement.getAttribute( "id");
+    	final String version = firstChildElement.getAttribute( "version");
+        final String filename = directoryPath+File.separator+firstChildElement.getAttribute("name");
+        final String name = id+"-"+version;
+		final String url = new File(filename).toURI().toURL().toString();
+        final String symbolicName = firstChildElement.getAttribute("symbolicname");
+    	final String mimetype= "application/vnd.osgi.bundle";
+    	
+    	String leftEndpoint = String.format("(&(Bundle-SymbolicName=%s)(Bundle-Version=%s))",symbolicName,version);
+		leftEndpoint = String.format("(Bundle-SymbolicName=%s)",symbolicName,version);
+    	final String rightEndpoint = String.format("(name=%s)",featureId);
+    	try {
+			ca2f(leftEndpoint,rightEndpoint,"10000","1");
+		} catch (Exception e) {
+		}
+	}
+
+	private void ensureAutoconfArtifact2Feature(final String featureName, String artId, Element artElement, String path) throws Exception {
+		String name = artElement.getAttribute("name");
+		final int indexOfDot = name.lastIndexOf('.');
+		final String filename = path+File.separator+name;
+		final File file = new File(filename);
+		name = String.format("%s - %s",name.substring(0, indexOfDot),"0.0.0");
+		final String url = file.toURI().toURL().toString();
+		final String mimetype = "application/xml:osgi-autoconf";
+		final String processorPid = "org.osgi.deployment.rp.autoconf";
+		
+		final String leftEndpoint = String.format("(artifactName=%s)",name);
+		final String rightEndpoint = String.format("(name=%s)",featureName);
+		
+		final String assocFilter = String.format("(&(%s=*%s*)(%s=*%s*))", Association.LEFT_ENDPOINT,name,Association.RIGHT_ENDPOINT,featureName);
+		final List<Artifact2FeatureAssociation> la2fRes = la2f(assocFilter);
+		for (Artifact2FeatureAssociation la2f : la2fRes) {
+			da2f(la2f);
+		}
+		
+		ca2f(leftEndpoint,rightEndpoint,"10000","1");
+	}
+
+	private String ensureFeature(final Node feature) throws Exception {
+		FeatureObject f;
+		String featureId = feature.getAttributes().getNamedItem("id").getNodeValue();
+		final String featureFilter = String.format("(name=%s)",featureId);
+		List<FeatureObject> lfRes = lf(featureFilter);
+		if (!lfRes.isEmpty()) {
+			//-- Del a2f assoc's
+			final List<Artifact2FeatureAssociation> la2fRes = la2f(String.format("(rightEndpoint=*name=%s*)",featureId));
+			for (Artifact2FeatureAssociation la2f : la2fRes) {
+				da2f(la2f);
+			}
+			
+			//-- Del feature
+			df(featureFilter);
+		}
+		f = cf(featureId);
+		return featureId;
+	}
+	
+	private String ensureDistribution(final Node dist) throws Exception {
+		DistributionObject f;
+		String distId = dist.getAttributes().getNamedItem("id").getNodeValue();
+		final String distFilter = String.format("(name=%s)",distId);
+		List<DistributionObject> lfRes = ld(distFilter);
+		if (!lfRes.isEmpty()) {
+			//-- Del a2f assoc's
+			final List<Feature2DistributionAssociation> lf2dRes = lf2d(String.format("(rightEndpoint=*name=%s*)",distId));
+			for (Feature2DistributionAssociation lf2d : lf2dRes) {
+				df2d(lf2d);
+			}
+			
+			//-- Del dist
+			dd(distFilter);
+		}
+		f = cd(distId);
+		return distId;
+	}	
+	
+	
+	private String ensureTarget(final Node target) throws Exception {
+		StatefulTargetObject f;
+		String tgtId = target.getAttributes().getNamedItem("id").getNodeValue();
+		final String tgtFilter = String.format("(id=%s)",tgtId);
+		List<StatefulTargetObject> ltRes = lt(tgtFilter);
+		if (!ltRes.isEmpty()) {
+			//-- Del d2t assoc's
+			final List<Distribution2TargetAssociation> ld2tRes = ld2t(String.format("(rightEndpoint=*name=%s*)",tgtId));
+			for (Distribution2TargetAssociation ld2t : ld2tRes) {
+				dd2t(ld2t);
+			}
+			
+			//-- Del target
+			dt(tgtFilter);
+		}
+        
+		//Tags
+		Map<String, String> tagsMap = new HashMap<>();
+        NodeList tags = ((Element)target).getElementsByTagName("tag");
+        for (int j=0; j<tags.getLength(); ++j) {
+            final Node tag = tags.item(j);
+            if (tag != null && tag.getNodeType() == Node.ELEMENT_NODE) {
+	            final Element firstChildElement = (Element) tag;
+	            if (firstChildElement != null) {
+					final String name = firstChildElement.getAttribute("name");
+					final String value = firstChildElement.getAttribute("value");
+					tagsMap.put(name,value);
+	            }
+            }
+        }			
+		
+		Map<String, String> attrs = new HashMap<>();
+        attrs.put(StatefulTargetObject.KEY_ID, tgtId);
+        
+		f = ct(attrs,tagsMap);
+		return tgtId;
+	}	
     public static Version getVersion(Resource resource) {
         Map<String, Object> attrs = getNamespaceAttributes(resource, "osgi.identity");
         if (attrs == null)
@@ -938,103 +1197,121 @@ public class WorkspaceImpl implements Workspace {
         return attrs;
     }    
     
+    
     @Override
-    public String expw(String id, String directoryPath) throws Exception {
-    	return expw(id,directoryPath,null);
+    public void expw(String directoryPath) throws Exception {
+    	expw(directoryPath,null);
     }
     
     @Override
-    public String expw(String id, String directoryPath, String target) throws Exception {
-    	String brName = id+".bndrun";
+    public void expw(String directoryPath, String targets) throws Exception {
+    	String[] targetsArray = null;
     	
-    	StringBuilder brsb = new StringBuilder();
-    	brsb.append("-runbundles.master: org.amdatu.configurator.autoconf;version=1.0.0\\\n");
-    	brsb.append("-include: \\\n");    	
+    	if (targets == null)
+    		System.out.println("Specify target(s)");
     	
-    	StringBuilder brpropssb = new StringBuilder();
-    	brpropssb.append("-runproperties:   \\\n");
+    	if (targets.contains(",")) 
+    		targetsArray = targets.split(",");
+    	else
+    		targetsArray = new String[]{targets};
+    		
     	
-    	StringBuilder dstsb = new StringBuilder();
-    	dstsb.append("<distributions>");
-
-		StringBuilder sb = new StringBuilder();
-		sb.append("<?xml version=\"1.0\"?>");
-    	try {
-			DPHelper dhelper = new DPHelper(this, m_log);
+    	for (String target : targetsArray) {
+        	String brName = target+".bndrun";
+        	StringBuilder brsb = new StringBuilder();
         	
-        	// download dists    		
-			Map<String,String> fmap = new HashMap<String,String>();
-			sb.append("<repository id=\""+id+"\">");
-
-        	//downloads targets
-			List<StatefulTargetObject> tgts = lt("(id="+target+")");
-			sb.append("<targets>");
-			for (StatefulTargetObject tgt : tgts) {
-				String tName = tgt.getID();
-				sb.append("<target id=\""+tName+"\">");
-				List<Distribution2TargetAssociation> d2tList = ld2t("(rightEndpoint=*id="+tName+"*)");
-				sb.append("<distributionrefs>");
-				for (Distribution2TargetAssociation d2t : d2tList) {
-					Enumeration<String> keys = d2t.getAttributeKeys();
-					String dName = d2t.getAttribute("leftEndpoint");
-					List<DistributionObject> ld = ld(dName);
-					if (ld.size() > 0) {
-						dName = ld.get(0).getName();
-						fmap.put(dName,downloadFeature(directoryPath,dName,dhelper));
-						
-						sb.append("<distributionref refid=\""+dName+"\">");
-						sb.append("</distributionref>");	
-						
-						generateDistrXMLContent(directoryPath, dstsb, dhelper, fmap, ld.get(0));
+	    	brsb.append("-runfw: org.apache.felix.framework;version=\"[4.2.1,5)\"");
+	    	brsb.append("-runee: JavaSE-1.7");
+	    	brsb.append("-runvm: -ea");
+	    	brsb.append("-runpath: com.springsource.javax.xml.stream");
+	    	brsb.append("-runsystemcapabilities: osgi.ee; osgi.ee=JavaSE; version:Version=1.7");
+	    	brsb.append("-runsystempackages: sun.misc");
+	    	brsb.append("-runbundles.master: org.amdatu.configurator.autoconf;version=1.0.0\\\n");
+	    	brsb.append("-include: \\\n");    	
+	    	
+	    	StringBuilder brpropssb = new StringBuilder();
+	    	brpropssb.append("-runproperties:   \\\n");
+	    	
+	    	StringBuilder dstsb = new StringBuilder();
+	    	dstsb.append("<distributions>");
+	
+			StringBuilder sb = new StringBuilder();
+			sb.append("<?xml version=\"1.0\"?>");
+	    	try {
+				DPHelper dhelper = new DPHelper(this, m_log);
+	        	
+	        	// download dists    		
+				Map<String,String> fmap = new HashMap<String,String>();
+				sb.append("<repository id=\""+target+"\">");
+	
+	        	//downloads targets
+				List<StatefulTargetObject> tgts = lt("(id="+target+")");
+				sb.append("<targets>");
+				for (StatefulTargetObject tgt : tgts) {
+					String tName = tgt.getID();
+					sb.append("<target id=\""+tName+"\">");
+					List<Distribution2TargetAssociation> d2tList = ld2t("(rightEndpoint=*id="+tName+"*)");
+					sb.append("<distributionrefs>");
+					for (Distribution2TargetAssociation d2t : d2tList) {
+						Enumeration<String> keys = d2t.getAttributeKeys();
+						String dName = d2t.getAttribute("leftEndpoint");
+						List<DistributionObject> ld = ld(dName);
+						if (ld.size() > 0) {
+							dName = ld.get(0).getName();
+							fmap.put(dName,downloadFeature(directoryPath,dName,dhelper));
+							
+							sb.append("<distributionref refid=\""+dName+"\">");
+							sb.append("</distributionref>");	
+							
+							generateDistrXMLContent(directoryPath, dstsb, dhelper, fmap, ld.get(0));
+						}
 					}
-				}
-				sb.append("</distributionrefs>");
-
-				Enumeration<String> tkeys = null;
-				try {
-					tkeys = tgt.getTagKeys();
-				} catch (Exception e) {
-				}
-				if (tkeys != null) {
-					sb.append("<tags>");
-					while (tkeys.hasMoreElements()) {
-						String key = tkeys.nextElement();
-						sb.append("<tag name=\""+key+"\" value=\""+tgt.getTag(key)+"\"/>");
-						brpropssb.append(key+"="+tgt.getTag(key)+",\\\n\t"); 
+					sb.append("</distributionrefs>");
+	
+					Enumeration<String> tkeys = null;
+					try {
+						tkeys = tgt.getTagKeys();
+					} catch (Exception e) {
 					}
-					sb.append("</tags>");			
+					if (tkeys != null) {
+						sb.append("<tags>");
+						while (tkeys.hasMoreElements()) {
+							String key = tkeys.nextElement();
+							sb.append("<tag name=\""+key+"\" value=\""+tgt.getTag(key)+"\"/>");
+							brpropssb.append(key+"="+tgt.getTag(key)+",\\\n\t"); 
+						}
+						sb.append("</tags>");			
+					}
+					sb.append("</target>");
 				}
-				sb.append("</target>");
+				
+				sb.append("</targets>");
+				
+				dstsb.append("</distributions>");
+	
+				StringBuilder fsb = new StringBuilder();
+				fsb.append(dstsb.toString());
+				fsb.append("<features>");
+				String ENDOL = ",\\\n";
+				for (String f : fmap.keySet()) {
+					fsb.append(fmap.get(f));
+					brsb.append("\t"+f+".bndrun"+ENDOL);
+				}
+				fsb.append("</features>");
+				brsb.append(brpropssb.toString());
+				
+	
+				sb.append(fsb.toString());
+				sb.append("</repository>");
+				
+				dhelper.writeTextContents(directoryPath, target+".xml", sb.toString());
+				dhelper.writeTextContents(directoryPath, brName, brsb.toString());
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				throw e;
 			}
-			
-			sb.append("</targets>");
-			
-			dstsb.append("</distributions>");
-
-			StringBuilder fsb = new StringBuilder();
-			fsb.append(dstsb.toString());
-			fsb.append("<features>");
-			String ENDOL = ",\\\n";
-			for (String f : fmap.keySet()) {
-				fsb.append(fmap.get(f));
-				brsb.append("\t"+f+".bndrun"+ENDOL);
-			}
-			fsb.append("</features>");
-			brsb.append(brpropssb.toString());
-			
-
-			sb.append(fsb.toString());
-			sb.append("</repository>");
-			
-			dhelper.writeTextContents(directoryPath, id+".xml", sb.toString());
-			dhelper.writeTextContents(directoryPath, brName, brsb.toString());
-			
-			return sb.toString();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			throw e;
-		}
+    	}
     }
 
 	private void generateDistrXMLContent(String directoryPath,
@@ -1085,7 +1362,7 @@ public class WorkspaceImpl implements Workspace {
     		//String ver = art.getAttribute("Bundle-Version");
     		List<ArtifactObject> ds = la(le);
     		if (ds.size() > 0) {
-				ArtifactObject a = ds.get(0);
+				ArtifactObject a = ds.get(ds.size()-1);
 				Enumeration<String> aks = a.getAttributeKeys();
 	    		url = a.getURL();
 	    		String name = a.getAttribute("Bundle-SymbolicName");
@@ -1104,7 +1381,7 @@ public class WorkspaceImpl implements Workspace {
 	    		}
 	    		
 	    		
-	    		String rootDir = isJar?directoryPath+File.separatorChar+"jars":directoryPath+File.separatorChar+"config";
+	    		String rootDir = directoryPath+File.separatorChar+"jars_and_configs";//isJar?directoryPath+File.separatorChar+"jars":directoryPath+File.separatorChar+"config";
 	    		File file = dhelper.downloadArtifactContents(isJar, rootDir, name, url);
 	    		if (isJar) {
 		            JarInputStream jis = new JarInputStream(new FileInputStream(file));

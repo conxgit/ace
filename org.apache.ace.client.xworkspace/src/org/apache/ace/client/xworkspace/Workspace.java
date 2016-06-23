@@ -58,15 +58,19 @@ import org.osgi.service.useradmin.User;
 public interface Workspace extends org.apache.ace.client.workspace.Workspace {
     /*** export/import 
      * @throws Exception ***/
-	public String expw(String id, String directoryPath) throws Exception;
+	public void expw(String directoryPath) throws Exception;
 	
-	public String expw(String id, String directoryPath, String target)  throws Exception;
+	public void expw(String directoryPath, String target)  throws Exception;
 	/***
 	 * @param directoryPath
 	 * @param exportFile
 	 * @throws Exception
 	 */
+	public List<String> getTargetExportFilePaths(String directoryPath);
+	
 	public void impw(String directoryPath, String exportFile)  throws Exception;
+	
+	public void impw(String directoryPath)  throws Exception;
 	
 	public void cpytgs(RepositoryObject src, RepositoryObject tgt) throws Exception;
 }
