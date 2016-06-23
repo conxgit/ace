@@ -67,8 +67,13 @@
 	launch.storage.dir=bundle-cache,\
 	org.apache.felix.log.storeDebug=true,\
 	org.apache.felix.eventadmin.Timeout=0,\
+<<<<<<< HEAD
 	org.apache.ace.server=192.168.99.101:9001,\
 	org.apache.ace.obr=192.168.99.101:9000,\
+=======
+	org.apache.ace.server=aceserver.myconxdev.com:9000,\
+	org.apache.ace.obr=aceserver.myconxdev.com:9000,\
+>>>>>>> bd4b4413c8ae62df3a4edee3fb28ddc80cc7cf2e
 	org.osgi.service.http.port=8081,\
 	org.apache.felix.log.maxSize=1000
 # org.apache.ace.server=192.168.99.101:9001,\
